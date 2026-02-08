@@ -19,7 +19,7 @@ WORKDIR /app
 # Copy source code
 COPY packages/shared/ ./packages/shared/
 COPY apps/api/package.json apps/api/tsconfig.json ./apps/api/
-COPY apps/api/src/app.ts ./apps/api/src/
+COPY apps/api/src/ ./apps/api/src/
 COPY apps/web/ ./apps/web/
 COPY tsconfig.json ./
 
