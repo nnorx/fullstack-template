@@ -1,0 +1,48 @@
+{
+	"name": "fullstack-template",
+	"version": "0.1.0",
+	"description": "A modern fullstack monorepo template with end-to-end type safety, designed for self-hosted deployment",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nnorx/fullstack-template"
+	},
+	"keywords": [
+		"template",
+		"monorepo",
+		"fullstack",
+		"typescript",
+		"react",
+		"hono",
+		"drizzle",
+		"turborepo"
+	],
+	"private": true,
+	"packageManager": "pnpm@10.28.0",
+	"type": "module",
+	"scripts": {
+		"dev": "turbo run dev",
+		"build": "turbo run build",
+		"lint": "turbo run lint",
+		"format": "turbo run format",
+		"type-check": "turbo run type-check",
+		"test": "turbo run test",
+		"knip": "turbo run knip",
+		"validate": "pnpm lint && pnpm type-check && pnpm test && pnpm build",
+		"check": "pnpm format && pnpm knip && pnpm validate",
+		"db:generate": "pnpm --filter @fullstack-template/api db:generate",
+		"db:migrate": "pnpm --filter @fullstack-template/api db:migrate",
+		"db:push": "pnpm --filter @fullstack-template/api db:push",
+		"db:studio": "pnpm --filter @fullstack-template/api db:studio",
+		"db:seed": "pnpm --filter @fullstack-template/api db:seed"
+	},
+	"devDependencies": {
+		"knip": "^5.83.1",
+		"turbo": "^2"
+	},
+	"pnpm": {
+		"overrides": {
+			"vite": "npm:rolldown-vite@7.3.1"
+		}
+	}
+}

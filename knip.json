@@ -1,0 +1,24 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"ignoreExportsUsedInFile": {
+		"interface": true,
+		"type": true
+	},
+	"tags": ["-lintignore", "+public"],
+	"workspaces": {
+		"apps/web": {
+			"entry": ["src/main.tsx", "src/routes/**/*.tsx"],
+			"ignoreDependencies": ["tw-animate-css", "@fullstack-template/shared"],
+			"ignoreExportsUsedInFile": {
+				"interface": true,
+				"type": true
+			}
+		},
+		"apps/api": {
+			"entry": ["src/index.ts", "src/db/migrate.ts", "src/db/seed.ts"]
+		},
+		"packages/shared": {
+			"entry": ["src/index.ts"]
+		}
+	}
+}

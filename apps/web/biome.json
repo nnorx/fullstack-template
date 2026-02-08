@@ -1,0 +1,19 @@
+{
+	"extends": ["../../biome.json"],
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": {
+		"includes": [
+			"**/src/**/*",
+			"**/.vscode/**/*",
+			"**/index.html",
+			"**/vite.config.ts",
+			"**/vitest.config.ts",
+			"!**/src/styles.css",
+			"!**/src/routeTree.gen.ts"
+		]
+	}
+}

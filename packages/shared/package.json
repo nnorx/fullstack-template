@@ -1,0 +1,30 @@
+{
+	"name": "@fullstack-template/shared",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"source": "./src/index.ts",
+			"import": "./dist/index.mjs",
+			"types": "./dist/index.d.mts"
+		}
+	},
+	"scripts": {
+		"build": "tsdown src/index.ts --format esm --dts",
+		"dev": "tsdown src/index.ts --format esm --dts --watch",
+		"lint": "biome check",
+		"format": "biome check --write",
+		"type-check": "tsc --noEmit",
+		"knip": "knip"
+	},
+	"dependencies": {
+		"zod": "^3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.11",
+		"knip": "^5.83.1",
+		"tsdown": "^0",
+		"typescript": "^5.9.3"
+	}
+}

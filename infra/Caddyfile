@@ -1,0 +1,29 @@
+:80 {
+	# Reverse proxy API requests to the backend service
+	handle /api/* {
+		reverse_proxy api:3001 {
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# Serve static frontend files with SPA fallback
+	handle {
+		root * /srv
+		file_server
+		try_files {path} /index.html
+	}
+
+	# Compression
+	encode gzip zstd
+
+	# Security headers
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		X-XSS-Protection "1; mode=block"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		# Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'"
+	}
+}

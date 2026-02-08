@@ -1,0 +1,12 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"target": "ES2023",
+		"lib": ["ES2023"],
+		"types": ["node", "vitest/globals"],
+		"outDir": "dist",
+		"allowImportingTsExtensions": true,
+		"noEmit": true
+	},
+	"include": ["src", "drizzle.config.ts", "vitest.config.ts"]
+}
