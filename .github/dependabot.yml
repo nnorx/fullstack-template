@@ -1,0 +1,51 @@
+version: 2
+updates:
+  # Enable version updates for npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "automated"
+    groups:
+      # Group all non-major updates together
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group major updates by scope
+      frontend-major:
+        patterns:
+          - "react*"
+          - "vite*"
+          - "@tanstack/*"
+          - "tailwindcss"
+        update-types:
+          - "major"
+      backend-major:
+        patterns:
+          - "hono*"
+          - "drizzle-*"
+          - "better-auth"
+        update-types:
+          - "major"
+    ignore:
+      # Ignore updates for packages that require manual migration
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  # Enable security updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
