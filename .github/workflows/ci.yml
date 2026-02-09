@@ -77,7 +77,7 @@ jobs:
           context: .
           file: infra/Dockerfile.api
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: |
             ghcr.io/${{ github.repository }}/api:latest
             ghcr.io/${{ github.repository }}/api:${{ github.sha }}
@@ -90,7 +90,7 @@ jobs:
           context: .
           file: infra/Dockerfile.web
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: |
             ghcr.io/${{ github.repository }}/web:latest
             ghcr.io/${{ github.repository }}/web:${{ github.sha }}
