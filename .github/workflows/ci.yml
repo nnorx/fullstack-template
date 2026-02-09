@@ -71,6 +71,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Note: Building for linux/amd64 only to avoid QEMU emulation issues on GitHub Actions.
+      # To add ARM64 support (linux/arm64), use GitHub's native ARM runners (ubuntu-24.04-arm64)
+      # or a matrix strategy with platform-specific runners. See: https://github.com/docker/build-push-action
       - name: Build and push API image
         uses: docker/build-push-action@v6
         with:
