@@ -1,6 +1,6 @@
 # Fullstack Template
 
-[![CI](https://github.com/yourusername/fullstack-template/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/fullstack-template/actions)
+[![CI](https://github.com/nnorx/fullstack-template/actions/workflows/ci.yml/badge.svg)](https://github.com/nnorx/fullstack-template/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A modern fullstack monorepo template with end-to-end type safety, designed for self-hosted deployment.
