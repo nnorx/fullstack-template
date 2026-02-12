@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { logger } from "./logger.ts";
 
 const envSchema = z.object({
 	DATABASE_URL: z.string().url("DATABASE_URL must be a valid URL"),
@@ -15,6 +16,9 @@ const envSchema = z.object({
 	NODE_ENV: z
 		.enum(["development", "production", "test"])
 		.default("development"),
+	LOG_LEVEL: z
+		.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
+		.default("info"),
 });
 
 /**
@@ -35,9 +39,9 @@ export function getEnv(): Env {
 	const result = envSchema.safeParse(process.env);
 
 	if (!result.success) {
-		console.error("Invalid environment variables:");
+		logger.error("Invalid environment variables:");
 		for (const issue of result.error.issues) {
-			console.error(`  ${issue.path.join(".")}: ${issue.message}`);
+			logger.error(`  ${issue.path.join(".")}: ${issue.message}`);
 		}
 		process.exit(1);
 	}

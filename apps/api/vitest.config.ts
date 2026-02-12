@@ -11,6 +11,7 @@ export default defineConfig({
 			BETTER_AUTH_URL: "http://localhost:3001",
 			API_PORT: "3001",
 			NODE_ENV: "test",
+			LOG_LEVEL: "silent",
 		},
 		coverage: {
 			provider: "v8",
