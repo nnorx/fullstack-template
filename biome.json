@@ -30,6 +30,9 @@
 			"nursery": {
 				"useSortedClasses": "error"
 			},
+			"performance": {
+				"noBarrelFile": "error"
+			},
 			"suspicious": {
 				"noExplicitAny": "error"
 			}
@@ -65,6 +68,9 @@
 				"rules": {
 					"nursery": {
 						"useSortedClasses": "off"
+					},
+					"performance": {
+						"noBarrelFile": "off"
 					}
 				}
 			}
