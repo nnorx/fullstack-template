@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { rateLimiter } from "hono-rate-limiter";
 import { env } from "./lib/env.ts";
+import { errorHandler, notFoundHandler } from "./middleware/error-handler.ts";
 import { requestLogger } from "./middleware/logger.ts";
 import { authRoutes, healthRoutes } from "./routes/index.ts";
 
@@ -59,7 +60,9 @@ const app = new Hono()
 	)
 	.use("/api/auth/*", authLimiter) // Apply stricter rate limit to auth routes
 	.route("/api/auth", authRoutes)
-	.route("/api/health", healthRoutes);
+	.route("/api/health", healthRoutes)
+	.onError(errorHandler)
+	.notFound(notFoundHandler);
 
 export type AppType = typeof app;
 export default app;
