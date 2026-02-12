@@ -3,6 +3,7 @@ import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { env } from "../lib/env.ts";
 import { AppError, type ErrorResponse } from "../lib/errors.ts";
+import { logger } from "../lib/logger.ts";
 
 /**
  * Global error handler — registered via `app.onError()`.
@@ -43,7 +44,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
 	}
 
 	// ── Unknown error ───────────────────────────────────────────────
-	console.error("Unhandled error:", err);
+	logger.error({ err }, "Unhandled error");
 
 	return c.json<ErrorResponse>(
 		{
