@@ -15,7 +15,12 @@
 			}
 		},
 		"apps/api": {
-			"entry": ["src/index.ts", "src/db/migrate.ts", "src/db/seed.ts"]
+			"entry": [
+				"src/index.ts",
+				"src/db/migrate.ts",
+				"src/db/seed.ts",
+				"src/test/helpers.ts"
+			]
 		},
 		"packages/shared": {
 			"entry": ["src/index.ts"]
