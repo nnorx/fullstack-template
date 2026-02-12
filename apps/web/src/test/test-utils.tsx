@@ -33,8 +33,5 @@ function customRender(
 	};
 }
 
-// Re-export everything from testing-library
-export * from "@testing-library/react";
-
-// Override render with custom version
+// Custom render only; import screen and other utilities from @testing-library/react in tests
 export { customRender as render };

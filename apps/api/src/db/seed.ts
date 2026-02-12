@@ -1,5 +1,5 @@
 import { db } from "./index.ts";
-import { user } from "./schema/index.ts";
+import { user } from "./schema/auth.ts";
 
 async function seed() {
 	console.log("Seeding database...");

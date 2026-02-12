@@ -5,7 +5,7 @@ config({ path: "../../.env" });
 
 export default defineConfig({
 	out: "./drizzle",
-	schema: "./src/db/schema/index.ts",
+	schema: "./src/db/schema/*.ts",
 	dialect: "postgresql",
 	dbCredentials: {
 		// biome-ignore lint/style/noNonNullAssertion: required for drizzle-kit CLI
