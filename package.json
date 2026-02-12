@@ -36,10 +36,17 @@
 		"db:migrate": "pnpm --filter @fullstack-template/api db:migrate",
 		"db:push": "pnpm --filter @fullstack-template/api db:push",
 		"db:studio": "pnpm --filter @fullstack-template/api db:studio",
-		"db:seed": "pnpm --filter @fullstack-template/api db:seed"
+		"db:seed": "pnpm --filter @fullstack-template/api db:seed",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*.{js,ts,tsx,jsx,json,css,md}": "biome check --write --no-errors-on-unmatched"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "2.3.14",
+		"husky": "^9.1.7",
 		"knip": "^5.83.1",
+		"lint-staged": "^16.2.7",
 		"turbo": "2.8.7"
 	},
 	"pnpm": {
