@@ -1,9 +1,13 @@
 import { Hono } from "hono";
 import { vi } from "vitest";
-import type { ErrorResponse } from "../lib/errors.ts";
-import type { AuthEnv, OptionalAuthEnv } from "./auth.ts";
+import {
+	createMockSession,
+	createMockUser,
+	createTestApp,
+	errorBody,
+} from "../test/helpers.ts";
+import type { OptionalAuthEnv } from "./auth.ts";
 import { optionalAuth, requireAuth } from "./auth.ts";
-import { errorHandler } from "./error-handler.ts";
 
 // Mock Better Auth's getSession - use vi.hoisted to avoid TDZ issues
 const mockGetSession = vi.hoisted(() => vi.fn());
@@ -16,27 +20,8 @@ vi.mock("../lib/auth.ts", () => ({
 	},
 }));
 
-const mockUser = {
-	id: "user-123",
-	email: "test@example.com",
-	name: "Test User",
-	createdAt: new Date(),
-	updatedAt: new Date(),
-	emailVerified: true,
-	image: null,
-	role: "user",
-};
-
-const mockSession = {
-	id: "session-456",
-	userId: "user-123",
-	expiresAt: new Date(Date.now() + 86400000),
-	token: "mock-token",
-	createdAt: new Date(),
-	updatedAt: new Date(),
-	ipAddress: null,
-	userAgent: null,
-};
+const mockUser = createMockUser();
+const mockSession = createMockSession();
 
 beforeEach(() => {
 	mockGetSession.mockReset();
@@ -44,8 +29,7 @@ beforeEach(() => {
 
 describe("requireAuth", () => {
 	function createApp() {
-		return new Hono<AuthEnv>()
-			.onError(errorHandler)
+		return createTestApp()
 			.use("*", requireAuth)
 			.get("/protected", (c) => {
 				const user = c.get("user");
@@ -69,7 +53,7 @@ describe("requireAuth", () => {
 
 		const app = createApp();
 		const res = await app.request("/protected");
-		const body = (await res.json()) as ErrorResponse;
+		const body = await errorBody(res);
 
 		expect(res.status).toBe(401);
 		expect(body.error.code).toBe("UNAUTHORIZED");
