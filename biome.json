@@ -27,13 +27,33 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"complexity": {
+				"noExcessiveCognitiveComplexity": "warn"
+			},
 			"nursery": {
 				"useSortedClasses": "error"
 			},
 			"performance": {
 				"noBarrelFile": "error"
 			},
+			"style": {
+				"noNegationElse": "warn",
+				"useFilenamingConvention": {
+					"level": "error",
+					"options": {
+						"strictCase": false,
+						"requireAscii": true,
+						"filenameCases": ["kebab-case", "camelCase", "PascalCase"]
+					}
+				}
+			},
 			"suspicious": {
+				"noConsole": {
+					"level": "warn",
+					"options": {
+						"allow": ["error", "warn", "info"]
+					}
+				},
 				"noExplicitAny": "error"
 			}
 		}
@@ -58,6 +78,9 @@
 				"rules": {
 					"nursery": {
 						"useSortedClasses": "off"
+					},
+					"suspicious": {
+						"noConsole": "off"
 					}
 				}
 			}
@@ -71,6 +94,34 @@
 					},
 					"performance": {
 						"noBarrelFile": "off"
+					},
+					"style": {
+						"noDefaultExport": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/*.test.ts",
+				"**/*.test.tsx",
+				"**/*.spec.ts",
+				"**/*.spec.tsx"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/drizzle.config.ts", "**/*.config.ts", "**/*.config.js"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noDefaultExport": "off"
 					}
 				}
 			}
