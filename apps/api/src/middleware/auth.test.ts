@@ -5,13 +5,13 @@ import type { AuthEnv, OptionalAuthEnv } from "./auth.ts";
 import { optionalAuth, requireAuth } from "./auth.ts";
 import { errorHandler } from "./error-handler.ts";
 
-// Mock Better Auth's getSession
-const mockGetSession = vi.fn();
+// Mock Better Auth's getSession - use vi.hoisted to avoid TDZ issues
+const mockGetSession = vi.hoisted(() => vi.fn());
 
 vi.mock("../lib/auth.ts", () => ({
 	auth: {
 		api: {
-			getSession: (...args: unknown[]) => mockGetSession(...args),
+			getSession: mockGetSession,
 		},
 	},
 }));
