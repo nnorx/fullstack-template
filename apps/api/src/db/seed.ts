@@ -134,8 +134,9 @@ async function seed() {
 
 	console.log("\n──────────────────────────────────────────");
 	console.log("  Seed complete! Sign in with:\n");
-	console.log(`  Admin:  ${SEED_ADMIN.email} / ${SEED_ADMIN.password}`);
-	console.log(`  User:   ${SEED_USER.email} / ${SEED_USER.password}`);
+	console.log(`  Admin:  ${SEED_ADMIN.email}`);
+	console.log(`  User:   ${SEED_USER.email}`);
+	console.log("\n  (see SEED_* constants in seed.ts for passwords)");
 	console.log("──────────────────────────────────────────\n");
 
 	process.exit(0);
