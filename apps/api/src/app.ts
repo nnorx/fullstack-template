@@ -6,7 +6,10 @@ import { rateLimiter } from "hono-rate-limiter";
 import { env } from "./lib/env.ts";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.ts";
 import { requestLogger } from "./middleware/logger.ts";
-import { requestIdMiddleware } from "./middleware/request-id.ts";
+import {
+	REQUEST_ID_HEADER,
+	requestIdMiddleware,
+} from "./middleware/request-id.ts";
 import { authRoutes } from "./routes/auth.ts";
 import { healthRoutes } from "./routes/health.ts";
 
@@ -77,7 +80,8 @@ app.use(
 		},
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-		allowHeaders: ["Content-Type", "Authorization"],
+		allowHeaders: ["Content-Type", "Authorization", REQUEST_ID_HEADER],
+		exposeHeaders: [REQUEST_ID_HEADER],
 	}),
 );
 
