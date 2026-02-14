@@ -3,10 +3,13 @@ import type { paths } from "./api.d.ts";
 import { ApiError } from "./api-error.ts";
 
 /**
- * Middleware that intercepts non-OK responses and throws an {@link ApiError}.
+ * Middleware that throws an {@link ApiError} when the response matches the
+ * API-wide error envelope: `{ error: { code, message, details? } }`.
  *
- * This runs for every request made through the client, so error handling
- * is centralized — callers don't need to check `response.ok` themselves.
+ * Non-2xx responses that use their own domain schema (e.g. a 503
+ * `UnhealthyResponse` from `/api/health`) are left alone so that
+ * openapi-fetch returns them in its typed `error` field and callers
+ * can handle them as normal domain data.
  */
 const errorMiddleware: Middleware = {
 	async onResponse({ response }) {
@@ -16,6 +19,22 @@ const errorMiddleware: Middleware = {
 			.clone()
 			.json()
 			.catch(() => null);
+
+		// Only throw for responses that match the global error envelope.
+		// Domain-specific non-2xx responses (with their own OpenAPI schemas)
+		// pass through so callers can inspect them via `{ error }`.
+		const isErrorEnvelope =
+			body &&
+			typeof body === "object" &&
+			"error" in body &&
+			body.error &&
+			typeof body.error === "object" &&
+			"code" in body.error &&
+			"message" in body.error &&
+			typeof body.error.code === "string" &&
+			typeof body.error.message === "string";
+
+		if (!isErrorEnvelope) return;
 
 		throw ApiError.fromResponse(response.status, body);
 	},

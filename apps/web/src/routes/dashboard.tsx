@@ -10,7 +10,11 @@ export const Route = createFileRoute("/dashboard")({
 function DashboardPage() {
 	const navigate = useNavigate();
 	const { data: session, isPending } = useSession();
-	const { data: health, isPending: isHealthPending } = useHealth();
+	const {
+		data: health,
+		isPending: isHealthPending,
+		isError: isHealthError,
+	} = useHealth();
 
 	useEffect(() => {
 		if (!isPending && !session?.user) {
@@ -66,7 +70,12 @@ function DashboardPage() {
 					<div className="mt-2 flex items-center gap-2">
 						{isHealthPending ? (
 							<span className="text-muted-foreground text-sm">Checking...</span>
-						) : health ? (
+						) : isHealthError ? (
+							<>
+								<span className="inline-block size-2 rounded-full bg-red-500" />
+								<span className="text-sm">Unreachable</span>
+							</>
+						) : health?.status === "healthy" ? (
 							<>
 								<span className="inline-block size-2 rounded-full bg-green-500" />
 								<span className="text-sm">
@@ -75,8 +84,10 @@ function DashboardPage() {
 							</>
 						) : (
 							<>
-								<span className="inline-block size-2 rounded-full bg-red-500" />
-								<span className="text-sm">Unreachable</span>
+								<span className="inline-block size-2 rounded-full bg-yellow-500" />
+								<span className="text-sm">
+									Unhealthy &mdash; {health?.error}
+								</span>
 							</>
 						)}
 					</div>
