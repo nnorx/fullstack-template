@@ -19,7 +19,7 @@
 		"knip": "knip"
 	},
 	"dependencies": {
-		"zod": "^3"
+		"zod": "^4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.14",

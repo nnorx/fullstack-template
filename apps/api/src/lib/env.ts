@@ -2,15 +2,15 @@ import { z } from "zod";
 import { logger } from "./logger.ts";
 
 const envSchema = z.object({
-	DATABASE_URL: z.string().url("DATABASE_URL must be a valid URL"),
-	BETTER_AUTH_SECRET: z.string().min(1, "BETTER_AUTH_SECRET is required"),
-	BETTER_AUTH_URL: z
+	DATABASE_URL: z.url({ error: "DATABASE_URL must be a valid URL" }),
+	BETTER_AUTH_SECRET: z
 		.string()
-		.url("BETTER_AUTH_URL must be a valid URL")
+		.min(1, { error: "BETTER_AUTH_SECRET is required" }),
+	BETTER_AUTH_URL: z
+		.url({ error: "BETTER_AUTH_URL must be a valid URL" })
 		.default("http://localhost:3001"),
 	FRONTEND_URL: z
-		.string()
-		.url("FRONTEND_URL must be a valid URL")
+		.url({ error: "FRONTEND_URL must be a valid URL" })
 		.default("http://localhost:5173"),
 	API_PORT: z.coerce.number().int().positive().default(3001),
 	NODE_ENV: z

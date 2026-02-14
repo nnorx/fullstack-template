@@ -1,4 +1,5 @@
-import { Hono } from "hono";
+import { swaggerUI } from "@hono/swagger-ui";
+import { OpenAPIHono, z } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { rateLimiter } from "hono-rate-limiter";
 import { env } from "./lib/env.ts";
@@ -43,27 +44,66 @@ const apiLimiter = rateLimiter({
 	},
 });
 
-const app = new Hono()
-	.use("*", requestLogger)
-	.use("*", apiLimiter) // Apply general rate limit to all routes
-	.use(
-		"*",
-		cors({
-			origin: (origin) => {
-				// Allow requests from trusted origins
-				const allowedOrigins = [env.FRONTEND_URL, env.BETTER_AUTH_URL];
-				return allowedOrigins.includes(origin) ? origin : env.FRONTEND_URL;
-			},
-			credentials: true,
-			allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-			allowHeaders: ["Content-Type", "Authorization"],
-		}),
-	)
-	.use("/api/auth/*", authLimiter) // Apply stricter rate limit to auth routes
-	.route("/api/auth", authRoutes)
-	.route("/api/health", healthRoutes)
-	.onError(errorHandler)
-	.notFound(notFoundHandler);
+const app = new OpenAPIHono({
+	defaultHook: (result, c) => {
+		if (!result.success) {
+			return c.json(
+				{
+					error: {
+						code: "VALIDATION_ERROR",
+						message: "Request validation failed",
+						details: z.flattenError(result.error),
+					},
+				},
+				422,
+			);
+		}
+	},
+});
+
+// ── Middleware ──────────────────────────────────────────────────────
+app.use("*", requestLogger);
+app.use("*", apiLimiter);
+app.use(
+	"*",
+	cors({
+		origin: (origin) => {
+			// Allow requests from trusted origins
+			const allowedOrigins = [env.FRONTEND_URL, env.BETTER_AUTH_URL];
+			return allowedOrigins.includes(origin) ? origin : env.FRONTEND_URL;
+		},
+		credentials: true,
+		allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+		allowHeaders: ["Content-Type", "Authorization"],
+	}),
+);
+app.use("/api/auth/*", authLimiter);
+
+// ── Routes ─────────────────────────────────────────────────────────
+app.route("/api/auth", authRoutes);
+app.route("/api/health", healthRoutes);
+
+// ── OpenAPI Documentation ──────────────────────────────────────────
+app.doc31("/api/doc", (c) => ({
+	openapi: "3.1.0",
+	info: {
+		title: "Fullstack Template API",
+		version: "1.0.0",
+		description: "API documentation for the fullstack template",
+	},
+	servers: [
+		{
+			url: new URL(c.req.url).origin,
+			description: "Current environment",
+		},
+	],
+}));
+
+app.get("/api/ui", swaggerUI({ url: "/api/doc" }));
+
+// ── Error Handling ─────────────────────────────────────────────────
+app.onError(errorHandler);
+app.notFound(notFoundHandler);
 
 export type AppType = typeof app;
 export default app;
