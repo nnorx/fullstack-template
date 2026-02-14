@@ -1,37 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { handleErrorResponse } from "./api-client";
 import { ApiError } from "./api-error";
-
-/**
- * Tests for the error middleware used by the API client.
- *
- * We mirror the middleware's onResponse logic here so we can test it
- * in isolation without going through the full openapi-fetch client.
- */
-
-/** Re-create the middleware's onResponse logic for unit testing. */
-async function handleResponse(response: Response): Promise<void> {
-	if (response.ok) return;
-
-	const body = await response
-		.clone()
-		.json()
-		.catch(() => null);
-
-	const isErrorEnvelope =
-		body &&
-		typeof body === "object" &&
-		"error" in body &&
-		body.error &&
-		typeof body.error === "object" &&
-		"code" in body.error &&
-		"message" in body.error &&
-		typeof body.error.code === "string" &&
-		typeof body.error.message === "string";
-
-	if (!isErrorEnvelope) return;
-
-	throw ApiError.fromResponse(response.status, body);
-}
 
 function jsonResponse(status: number, body: unknown): Response {
 	return new Response(JSON.stringify(body), { status });
@@ -41,7 +10,7 @@ describe("API client error middleware", () => {
 	it("does nothing for successful responses", async () => {
 		const res = jsonResponse(200, { status: "healthy" });
 
-		await expect(handleResponse(res)).resolves.toBeUndefined();
+		await expect(handleErrorResponse(res)).resolves.toBeUndefined();
 	});
 
 	it("throws ApiError when body matches the error envelope", async () => {
@@ -54,7 +23,7 @@ describe("API client error middleware", () => {
 		});
 
 		try {
-			await handleResponse(res);
+			await handleErrorResponse(res);
 			expect.fail("Should have thrown");
 		} catch (err) {
 			expect(err).toBeInstanceOf(ApiError);
@@ -77,7 +46,7 @@ describe("API client error middleware", () => {
 		});
 
 		try {
-			await handleResponse(res);
+			await handleErrorResponse(res);
 			expect.fail("Should have thrown");
 		} catch (err) {
 			expect(err).toBeInstanceOf(ApiError);
@@ -97,7 +66,7 @@ describe("API client error middleware", () => {
 		});
 
 		// Should NOT throw — let openapi-fetch return it as typed `error` data
-		await expect(handleResponse(res)).resolves.toBeUndefined();
+		await expect(handleErrorResponse(res)).resolves.toBeUndefined();
 	});
 
 	it("passes through non-JSON error responses", async () => {
@@ -107,12 +76,12 @@ describe("API client error middleware", () => {
 		});
 
 		// body parse fails → null → not an error envelope → passes through
-		await expect(handleResponse(res)).resolves.toBeUndefined();
+		await expect(handleErrorResponse(res)).resolves.toBeUndefined();
 	});
 
 	it("passes through when error field is a string, not an object", async () => {
 		const res = jsonResponse(400, { error: "some string" });
 
-		await expect(handleResponse(res)).resolves.toBeUndefined();
+		await expect(handleErrorResponse(res)).resolves.toBeUndefined();
 	});
 });

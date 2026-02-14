@@ -47,6 +47,62 @@ describe("ApiError", () => {
 		});
 	});
 
+	describe("isErrorEnvelope", () => {
+		it("returns true for a valid error envelope", () => {
+			expect(
+				ApiError.isErrorEnvelope({
+					error: { code: "NOT_FOUND", message: "Not found" },
+				}),
+			).toBe(true);
+		});
+
+		it("returns true when details are present", () => {
+			expect(
+				ApiError.isErrorEnvelope({
+					error: {
+						code: "VALIDATION_ERROR",
+						message: "Bad",
+						details: { field: "x" },
+					},
+				}),
+			).toBe(true);
+		});
+
+		it("returns false for null", () => {
+			expect(ApiError.isErrorEnvelope(null)).toBe(false);
+		});
+
+		it("returns false when error is a string", () => {
+			expect(ApiError.isErrorEnvelope({ error: "string" })).toBe(false);
+		});
+
+		it("returns false for domain responses with a string error field", () => {
+			// e.g. UnhealthyResponse: { status, timestamp, error: "..." }
+			expect(
+				ApiError.isErrorEnvelope({
+					status: "unhealthy",
+					error: "Database connection failed",
+				}),
+			).toBe(false);
+		});
+
+		it("returns false when code is not a string", () => {
+			expect(
+				ApiError.isErrorEnvelope({
+					error: { code: 123, message: "bad" },
+				}),
+			).toBe(false);
+		});
+
+		it("returns false when message is not a string", () => {
+			expect(
+				ApiError.isErrorEnvelope({
+					error: { code: "ERR", message: null },
+				}),
+			).toBe(false);
+		});
+	});
+
 	describe("fromResponse", () => {
 		it("parses a well-formed API error body", () => {
 			const body = {

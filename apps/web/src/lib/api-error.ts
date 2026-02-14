@@ -44,26 +44,36 @@ export class ApiError extends Error {
 	}
 
 	/**
-	 * Parse an API error response body into an ApiError instance.
+	 * Type guard that checks whether a parsed response body matches the
+	 * API-wide error envelope: `{ error: { code: string, message: string, details? } }`.
 	 */
-	static fromResponse(status: number, body: unknown): ApiError {
-		if (
-			body &&
+	static isErrorEnvelope(
+		body: unknown,
+	): body is { error: { code: string; message: string; details?: unknown } } {
+		return (
+			body != null &&
 			typeof body === "object" &&
 			"error" in body &&
-			body.error &&
+			body.error != null &&
 			typeof body.error === "object" &&
 			"code" in body.error &&
 			typeof (body.error as Record<string, unknown>).code === "string" &&
 			"message" in body.error &&
 			typeof (body.error as Record<string, unknown>).message === "string"
-		) {
-			const err = body.error as {
-				code: string;
-				message: string;
-				details?: unknown;
-			};
-			return new ApiError(status, err.code, err.message, err.details);
+		);
+	}
+
+	/**
+	 * Parse an API error response body into an ApiError instance.
+	 */
+	static fromResponse(status: number, body: unknown): ApiError {
+		if (ApiError.isErrorEnvelope(body)) {
+			return new ApiError(
+				status,
+				body.error.code,
+				body.error.message,
+				body.error.details,
+			);
 		}
 
 		return new ApiError(

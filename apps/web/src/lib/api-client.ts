@@ -10,34 +10,27 @@ import { ApiError } from "./api-error.ts";
  * `UnhealthyResponse` from `/api/health`) are left alone so that
  * openapi-fetch returns them in its typed `error` field and callers
  * can handle them as normal domain data.
+ *
+ * Exported for direct unit testing.
  */
+export async function handleErrorResponse(response: Response): Promise<void> {
+	if (response.ok) return;
+
+	const body = await response
+		.clone()
+		.json()
+		.catch(() => null);
+
+	// Only throw for responses that match the global error envelope.
+	// Domain-specific non-2xx responses (with their own OpenAPI schemas)
+	// pass through so callers can inspect them via `{ error }`.
+	if (!ApiError.isErrorEnvelope(body)) return;
+
+	throw ApiError.fromResponse(response.status, body);
+}
+
 const errorMiddleware: Middleware = {
-	async onResponse({ response }) {
-		if (response.ok) return;
-
-		const body = await response
-			.clone()
-			.json()
-			.catch(() => null);
-
-		// Only throw for responses that match the global error envelope.
-		// Domain-specific non-2xx responses (with their own OpenAPI schemas)
-		// pass through so callers can inspect them via `{ error }`.
-		const isErrorEnvelope =
-			body &&
-			typeof body === "object" &&
-			"error" in body &&
-			body.error &&
-			typeof body.error === "object" &&
-			"code" in body.error &&
-			"message" in body.error &&
-			typeof body.error.code === "string" &&
-			typeof body.error.message === "string";
-
-		if (!isErrorEnvelope) return;
-
-		throw ApiError.fromResponse(response.status, body);
-	},
+	onResponse: ({ response }) => handleErrorResponse(response),
 };
 
 /**
