@@ -6,6 +6,7 @@ import { rateLimiter } from "hono-rate-limiter";
 import { env } from "./lib/env.ts";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.ts";
 import { requestLogger } from "./middleware/logger.ts";
+import { requestIdMiddleware } from "./middleware/request-id.ts";
 import { authRoutes } from "./routes/auth.ts";
 import { healthRoutes } from "./routes/health.ts";
 
@@ -64,6 +65,7 @@ const app = new OpenAPIHono({
 });
 
 // ── Middleware ──────────────────────────────────────────────────────
+app.use("*", requestIdMiddleware);
 app.use("*", requestLogger);
 app.use(
 	"*",
