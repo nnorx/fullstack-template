@@ -11,7 +11,7 @@ export {
 
 // Common schemas and types
 export {
-	type ApiError,
+	type ApiErrorResponse,
 	type ApiSuccess,
 	apiErrorSchema,
 	apiSuccessSchema,
