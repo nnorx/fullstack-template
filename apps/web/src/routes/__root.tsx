@@ -3,6 +3,7 @@ import {
 	createRootRouteWithContext,
 	Link,
 	Outlet,
+	useNavigate,
 } from "@tanstack/react-router";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootLayout() {
 	const { data: session, isPending } = useSession();
+	const navigate = useNavigate();
+
+	const handleSignOut = () => {
+		void signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					void navigate({ to: "/" });
+				},
+			},
+		});
+	};
 
 	return (
 		<div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -41,7 +53,7 @@ function RootLayout() {
 							<span className="text-muted-foreground text-sm">
 								{session.user.name}
 							</span>
-							<Button variant="ghost" size="sm" onClick={() => signOut()}>
+							<Button variant="ghost" size="sm" onClick={handleSignOut}>
 								Sign Out
 							</Button>
 						</>

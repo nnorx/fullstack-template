@@ -1,47 +1,28 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useHealth } from "@/hooks/use-health";
 import { useSession } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
 	component: DashboardPage,
 });
 
 function DashboardPage() {
-	const navigate = useNavigate();
-	const { data: session, isPending } = useSession();
+	const { data: session } = useSession();
 	const {
 		data: health,
 		isPending: isHealthPending,
 		isError: isHealthError,
 	} = useHealth();
 
-	useEffect(() => {
-		if (!isPending && !session?.user) {
-			void navigate({ to: "/login" });
-		}
-	}, [isPending, session, navigate]);
-
-	if (isPending) {
-		return (
-			<div className="flex flex-1 items-center justify-center">
-				<p className="text-muted-foreground">Loading...</p>
-			</div>
-		);
-	}
-
-	if (!session?.user) {
-		return null;
-	}
+	// Session is guaranteed by the _authenticated layout's beforeLoad guard
+	const user = session?.user;
 
 	return (
 		<div className="flex flex-1 flex-col p-6">
 			<div className="mx-auto w-full max-w-4xl space-y-6">
 				<div>
 					<h1 className="font-bold text-2xl">Dashboard</h1>
-					<p className="text-muted-foreground">
-						Welcome back, {session.user.name}
-					</p>
+					<p className="text-muted-foreground">Welcome back, {user?.name}</p>
 				</div>
 
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -49,12 +30,12 @@ function DashboardPage() {
 						<h3 className="font-medium text-muted-foreground text-sm">
 							Account
 						</h3>
-						<p className="mt-2 font-semibold text-2xl">{session.user.email}</p>
+						<p className="mt-2 font-semibold text-2xl">{user?.email}</p>
 					</div>
 					<div className="rounded-lg border bg-card p-6 shadow-sm">
 						<h3 className="font-medium text-muted-foreground text-sm">Role</h3>
 						<p className="mt-2 font-semibold text-2xl capitalize">
-							{session.user.role ?? "user"}
+							{user?.role ?? "user"}
 						</p>
 					</div>
 					<div className="rounded-lg border bg-card p-6 shadow-sm">

@@ -1,5 +1,6 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono, z } from "@hono/zod-openapi";
+import type { Context } from "hono";
 import { cors } from "hono/cors";
 import { rateLimiter } from "hono-rate-limiter";
 import { env } from "./lib/env.ts";
@@ -8,40 +9,41 @@ import { requestLogger } from "./middleware/logger.ts";
 import { authRoutes } from "./routes/auth.ts";
 import { healthRoutes } from "./routes/health.ts";
 
-// Rate limiter for authentication endpoints
+/** Extract the client IP from Cloudflare or proxy headers. */
+function getClientIp(c: Context): string {
+	// Cloudflare sets CF-Connecting-IP, fallback to X-Forwarded-For (first IP in chain)
+	const cfIp = c.req.header("cf-connecting-ip");
+	const forwardedFor = c.req.header("x-forwarded-for");
+	return (
+		cfIp ??
+		(forwardedFor
+			? (forwardedFor.split(",")[0]?.trim() ?? "unknown")
+			: "unknown")
+	);
+}
+
+const isDev = env.NODE_ENV === "development";
+
+// Rate limiter for auth mutation endpoints (sign-in, sign-up, etc.)
+// Passive reads like get-session are excluded — they go through the general limiter.
 const authLimiter = rateLimiter({
 	windowMs: 15 * 60 * 1000, // 15 minutes
 	limit: 20, // Limit each IP to 20 requests per window
-	standardHeaders: "draft-7", // Set RateLimit-* headers
-	keyGenerator: (c) => {
-		// Cloudflare sets CF-Connecting-IP, fallback to X-Forwarded-For (first IP in chain)
-		const cfIp = c.req.header("cf-connecting-ip");
-		const forwardedFor = c.req.header("x-forwarded-for");
-		const ip =
-			cfIp ??
-			(forwardedFor
-				? (forwardedFor.split(",")[0]?.trim() ?? "unknown")
-				: "unknown");
-		return ip;
-	},
+	standardHeaders: "draft-7",
+	keyGenerator: getClientIp,
+	skip: (c) => isDev || c.req.method === "GET",
 });
 
-// General API rate limiter (more permissive)
+// General API rate limiter (more permissive, skips auth mutation routes which have their own limiter)
 const apiLimiter = rateLimiter({
 	windowMs: 15 * 60 * 1000, // 15 minutes
 	limit: 100, // Limit each IP to 100 requests per window
 	standardHeaders: "draft-7",
-	keyGenerator: (c) => {
-		// Cloudflare sets CF-Connecting-IP, fallback to X-Forwarded-For (first IP in chain)
-		const cfIp = c.req.header("cf-connecting-ip");
-		const forwardedFor = c.req.header("x-forwarded-for");
-		const ip =
-			cfIp ??
-			(forwardedFor
-				? (forwardedFor.split(",")[0]?.trim() ?? "unknown")
-				: "unknown");
-		return ip;
-	},
+	keyGenerator: getClientIp,
+	skip: (c) =>
+		isDev ||
+		// Auth POST endpoints have their own stricter limiter
+		(c.req.path.startsWith("/api/auth") && c.req.method !== "GET"),
 });
 
 const app = new OpenAPIHono({
@@ -63,20 +65,23 @@ const app = new OpenAPIHono({
 
 // ── Middleware ──────────────────────────────────────────────────────
 app.use("*", requestLogger);
-app.use("*", apiLimiter);
 app.use(
 	"*",
 	cors({
 		origin: (origin) => {
-			// Allow requests from trusted origins
+			// Allow requests from trusted origins, reject unknown origins
 			const allowedOrigins = [env.FRONTEND_URL, env.BETTER_AUTH_URL];
-			return allowedOrigins.includes(origin) ? origin : env.FRONTEND_URL;
+			return allowedOrigins.includes(origin) ? origin : "";
 		},
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 		allowHeaders: ["Content-Type", "Authorization"],
 	}),
 );
+
+// General rate limiter for all routes (skips auth routes internally)
+app.use("*", apiLimiter);
+// Auth routes get their own stricter rate limiter
 app.use("/api/auth/*", authLimiter);
 
 // ── Routes ─────────────────────────────────────────────────────────
