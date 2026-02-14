@@ -1,26 +1,13 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono, z } from "@hono/zod-openapi";
-import type { Context } from "hono";
 import { cors } from "hono/cors";
 import { rateLimiter } from "hono-rate-limiter";
 import { env } from "./lib/env.ts";
+import { getClientIp } from "./lib/request-utils.ts";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.ts";
 import { requestLogger } from "./middleware/logger.ts";
 import { authRoutes } from "./routes/auth.ts";
 import { healthRoutes } from "./routes/health.ts";
-
-/** Extract the client IP from Cloudflare or proxy headers. */
-function getClientIp(c: Context): string {
-	// Cloudflare sets CF-Connecting-IP, fallback to X-Forwarded-For (first IP in chain)
-	const cfIp = c.req.header("cf-connecting-ip");
-	const forwardedFor = c.req.header("x-forwarded-for");
-	return (
-		cfIp ??
-		(forwardedFor
-			? (forwardedFor.split(",")[0]?.trim() ?? "unknown")
-			: "unknown")
-	);
-}
 
 const isDev = env.NODE_ENV === "development";
 
