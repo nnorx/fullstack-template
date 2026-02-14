@@ -40,26 +40,36 @@ A modern fullstack monorepo template with end-to-end type safety, designed for s
 
 ## Type Safety
 
-The API types flow from backend to frontend with zero code generation:
+API types flow from backend to frontend via OpenAPI:
 
 ```typescript
-// Backend: define routes with Zod validation
-const app = new Hono()
-  .post("/api/items", zValidator("json", createItemSchema), async (c) => {
-    // ...
-    return c.json({ item });
-  });
+// Backend: define routes with Zod schemas (apps/api/src/routes/)
+const route = createRoute({
+  method: "get",
+  path: "/",
+  responses: {
+    200: { content: { "application/json": { schema: MySchema } } },
+  },
+});
 
-export type AppType = typeof app;
-
-// Frontend: fully typed API calls
-import { hc } from "hono/client";
-import type { AppType } from "@fullstack-template/api";
-
-const api = hc<AppType>("");
-const res = await api.api.items.$post({ json: { name: "test" } });
-//    ^-- fully typed response
+app.openapi(route, async (c) => { /* ... */ });
 ```
+
+```typescript
+// Frontend: auto-typed API calls (apps/web/src/)
+import { client } from "@/lib/api-client";
+
+const { data } = await client.GET("/api/health");
+//      ^? { status: "healthy"; timestamp: string; uptime: number }
+```
+
+Types are generated from the OpenAPI spec served at `/api/doc`:
+
+```bash
+pnpm --filter @fullstack-template/web typegen
+```
+
+This generates `apps/web/src/lib/api.d.ts` from the live API. Regenerate whenever you add or change API routes.
 
 ## Getting Started
 
@@ -150,6 +160,40 @@ fullstack-template/
 | `pnpm db:push` | Push schema directly (development) |
 | `pnpm db:studio` | Open Drizzle Studio (visual DB browser) |
 | `pnpm db:seed` | Seed the database with initial data |
+
+## Data Fetching
+
+API calls use [openapi-fetch](https://openapi-ts.dev/openapi-fetch/) with types generated from the OpenAPI spec, paired with [TanStack Query](https://tanstack.com/query) for caching and state management.
+
+```typescript
+// 1. Use the typed client — paths autocomplete, responses are inferred
+import { client } from "@/lib/api-client";
+
+const { data } = await client.GET("/api/health");
+
+// 2. Wrap in a TanStack Query hook with a key from the factory
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys";
+
+export function useHealth() {
+  return useQuery({
+    queryKey: queryKeys.health.check(),
+    queryFn: async () => {
+      const { data } = await client.GET("/api/health");
+      if (!data) throw new Error("Unexpected empty response");
+      return data;
+    },
+  });
+}
+```
+
+Errors are automatically parsed into `ApiError` instances by the client middleware. The `QueryClient` skips retries on 4xx errors (not transient).
+
+When adding a new API route:
+
+1. Define the route in `apps/api/src/routes/` using `createRoute` with Zod schemas
+2. Run `pnpm --filter @fullstack-template/web typegen` to regenerate types
+3. Create a hook in `apps/web/src/hooks/` using `client.GET`/`POST`/etc.
 
 ## Authentication
 

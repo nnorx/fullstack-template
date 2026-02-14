@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useHealth } from "@/hooks/use-health";
 import { useSession } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/dashboard")({
@@ -9,6 +10,11 @@ export const Route = createFileRoute("/dashboard")({
 function DashboardPage() {
 	const navigate = useNavigate();
 	const { data: session, isPending } = useSession();
+	const {
+		data: health,
+		isPending: isHealthPending,
+		isError: isHealthError,
+	} = useHealth();
 
 	useEffect(() => {
 		if (!isPending && !session?.user) {
@@ -60,11 +66,31 @@ function DashboardPage() {
 				</div>
 
 				<div className="rounded-lg border bg-card p-6 shadow-sm">
-					<h2 className="font-semibold text-lg">Getting Started</h2>
-					<p className="mt-2 text-muted-foreground">
-						This is a protected page that only authenticated users can see.
-						Start building your application by adding new routes and components.
-					</p>
+					<h2 className="font-semibold text-lg">API Status</h2>
+					<div className="mt-2 flex items-center gap-2">
+						{isHealthPending ? (
+							<span className="text-muted-foreground text-sm">Checking...</span>
+						) : isHealthError ? (
+							<>
+								<span className="inline-block size-2 rounded-full bg-red-500" />
+								<span className="text-sm">Unreachable</span>
+							</>
+						) : health?.status === "healthy" ? (
+							<>
+								<span className="inline-block size-2 rounded-full bg-green-500" />
+								<span className="text-sm">
+									Healthy &mdash; uptime {Math.floor(health.uptime / 60)}m
+								</span>
+							</>
+						) : (
+							<>
+								<span className="inline-block size-2 rounded-full bg-yellow-500" />
+								<span className="text-sm">
+									Unhealthy &mdash; {health?.error}
+								</span>
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

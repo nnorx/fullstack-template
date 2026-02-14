@@ -1,4 +1,5 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
-	"ignoreDependencies": ["tw-animate-css", "@fullstack-template/shared"]
+	"ignoreDependencies": ["@fullstack-template/shared"],
+	"ignore": ["src/lib/api.d.ts"]
 }

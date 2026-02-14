@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { ErrorBoundary } from "./components/ErrorBoundary.tsx";
+import { ApiError } from "./lib/api-error.ts";
 import { initTheme } from "./lib/theme.ts";
 import { routeTree } from "./routeTree.gen.ts";
 
@@ -14,7 +15,14 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			staleTime: 1000 * 60, // 1 minute
-			retry: 1,
+			retry: (failureCount, error) => {
+				// Don't retry on client errors — they won't succeed on retry
+				if (error instanceof ApiError && error.status < 500) return false;
+				return failureCount < 1;
+			},
+		},
+		mutations: {
+			retry: false,
 		},
 	},
 });
