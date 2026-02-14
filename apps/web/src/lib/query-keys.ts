@@ -20,6 +20,10 @@
  * ```
  */
 export const queryKeys = {
+	auth: {
+		all: ["auth"] as const,
+		session: () => [...queryKeys.auth.all, "session"] as const,
+	},
 	health: {
 		all: ["health"] as const,
 		check: () => [...queryKeys.health.all, "check"] as const,
