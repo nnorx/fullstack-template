@@ -25,6 +25,20 @@ describe("requestIdMiddleware", () => {
 		expect(body.requestId).toBe(id);
 	});
 
+	it("accepts valid X-Request-ID with leading/trailing whitespace and trims it", async () => {
+		const id = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
+		const withSpaces = ` ${id} `;
+		const app = createApp();
+		const res = await app.request("/", {
+			headers: { [REQUEST_ID_HEADER]: withSpaces },
+		});
+
+		expect(res.status).toBe(200);
+		expect(res.headers.get(REQUEST_ID_HEADER)).toBe(id);
+		const body = (await res.json()) as { requestId: string };
+		expect(body.requestId).toBe(id);
+	});
+
 	it("generates a UUID when X-Request-ID is missing", async () => {
 		const app = createApp();
 		const res = await app.request("/");
