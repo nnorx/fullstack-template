@@ -28,8 +28,8 @@ export const requestIdMiddleware: MiddlewareHandler<RequestIdEnv> = async (
 	c,
 	next,
 ) => {
-	const raw = c.req.header(REQUEST_ID_HEADER);
-	const id = raw && isValidRequestId(raw.trim()) ? raw.trim() : randomUUID();
+	const trimmed = c.req.header(REQUEST_ID_HEADER)?.trim();
+	const id = trimmed && isValidRequestId(trimmed) ? trimmed : randomUUID();
 	c.set("requestId", id);
 	c.header(REQUEST_ID_HEADER, id);
 	await next();
