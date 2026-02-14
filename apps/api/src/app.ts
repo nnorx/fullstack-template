@@ -6,6 +6,10 @@ import { env } from "./lib/env.ts";
 import { getClientIp } from "./lib/request-utils.ts";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.ts";
 import { requestLogger } from "./middleware/logger.ts";
+import {
+	REQUEST_ID_HEADER,
+	requestIdMiddleware,
+} from "./middleware/request-id.ts";
 import { authRoutes } from "./routes/auth.ts";
 import { healthRoutes } from "./routes/health.ts";
 
@@ -51,6 +55,7 @@ const app = new OpenAPIHono({
 });
 
 // ── Middleware ──────────────────────────────────────────────────────
+app.use("*", requestIdMiddleware);
 app.use("*", requestLogger);
 app.use(
 	"*",
@@ -62,7 +67,8 @@ app.use(
 		},
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-		allowHeaders: ["Content-Type", "Authorization"],
+		allowHeaders: ["Content-Type", "Authorization", REQUEST_ID_HEADER],
+		exposeHeaders: [REQUEST_ID_HEADER],
 	}),
 );
 
