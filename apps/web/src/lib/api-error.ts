@@ -54,7 +54,9 @@ export class ApiError extends Error {
 			body.error &&
 			typeof body.error === "object" &&
 			"code" in body.error &&
-			"message" in body.error
+			typeof (body.error as Record<string, unknown>).code === "string" &&
+			"message" in body.error &&
+			typeof (body.error as Record<string, unknown>).message === "string"
 		) {
 			const err = body.error as {
 				code: string;
