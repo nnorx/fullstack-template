@@ -21,9 +21,10 @@
 	"packageManager": "pnpm@10.28.0",
 	"type": "module",
 	"scripts": {
-		"dev:db": "docker compose -f infra/docker-compose.dev.yml up -d",
+		"dev:db": "docker compose -f infra/docker-compose.dev.yml up -d --wait",
 		"dev:db:down": "docker compose -f infra/docker-compose.dev.yml down",
-		"dev": "pnpm dev:db && turbo run dev",
+		"dev:db:reset": "docker compose -f infra/docker-compose.dev.yml down -v && pnpm dev:db && pnpm db:migrate && pnpm db:seed",
+		"dev": "pnpm dev:db && pnpm db:migrate && turbo run dev",
 		"build": "turbo run build",
 		"lint": "turbo run lint",
 		"format": "turbo run format",
