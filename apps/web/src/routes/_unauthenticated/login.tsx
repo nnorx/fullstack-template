@@ -1,12 +1,14 @@
 import { loginSchema } from "@fullstack-template/shared";
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { signIn } from "@/lib/auth-client";
+import { queryKeys } from "@/lib/query-keys";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/_unauthenticated/login")({
 	validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
 		if (typeof search.redirect === "string")
 			return { redirect: search.redirect };
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
+	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 	const { redirect } = Route.useSearch();
 	const [email, setEmail] = useState("");
@@ -49,6 +52,9 @@ function LoginPage() {
 			if (authError) {
 				setError(authError.message ?? "Sign in failed");
 			} else {
+				queryClient.removeQueries({
+					queryKey: queryKeys.auth.session(),
+				});
 				await navigate({ to: redirect ?? "/dashboard" });
 			}
 		} catch {
