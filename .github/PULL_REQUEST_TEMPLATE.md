@@ -9,10 +9,3 @@
 - [ ] Performance improvement
 - [ ] Dependency update
 
-## Screenshots (if applicable)
-
-
-
-## Additional Notes
-
-
