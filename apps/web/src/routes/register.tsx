@@ -7,11 +7,17 @@ import { Spinner } from "@/components/ui/spinner";
 import { signUp } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/register")({
+	validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+		if (typeof search.redirect === "string")
+			return { redirect: search.redirect };
+		return {};
+	},
 	component: RegisterPage,
 });
 
 function RegisterPage() {
 	const navigate = useNavigate();
+	const { redirect } = Route.useSearch();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -46,7 +52,7 @@ function RegisterPage() {
 			if (authError) {
 				setError(authError.message ?? "Sign up failed");
 			} else {
-				await navigate({ to: "/dashboard" });
+				await navigate({ to: redirect ?? "/dashboard" });
 			}
 		} catch {
 			setError("An unexpected error occurred");
@@ -136,6 +142,7 @@ function RegisterPage() {
 					Already have an account?{" "}
 					<Link
 						to="/login"
+						search={redirect ? { redirect } : {}}
 						className="text-primary underline-offset-4 hover:underline"
 					>
 						Sign in

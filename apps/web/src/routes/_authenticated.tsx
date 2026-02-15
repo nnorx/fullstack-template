@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 
 export const Route = createFileRoute("/_authenticated")({
-	beforeLoad: async ({ context }) => {
+	beforeLoad: async ({ context, location }) => {
 		const session = await context.queryClient.ensureQueryData({
 			queryKey: queryKeys.auth.session(),
 			queryFn: async () => {
@@ -14,7 +14,10 @@ export const Route = createFileRoute("/_authenticated")({
 		});
 
 		if (!session) {
-			throw redirect({ to: "/login" });
+			throw redirect({
+				to: "/login",
+				search: { redirect: location.href },
+			});
 		}
 
 		return { session };
