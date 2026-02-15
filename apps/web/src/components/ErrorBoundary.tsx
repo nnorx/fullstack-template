@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
 	children: ReactNode;
@@ -38,13 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
 					<p className="max-w-md text-muted-foreground">
 						An unexpected error occurred. Please refresh the page to try again.
 					</p>
-					<button
-						type="button"
-						onClick={() => window.location.reload()}
-						className="rounded-lg bg-primary px-4 py-2 text-primary-foreground transition-colors hover:bg-primary/90"
-					>
-						Refresh Page
-					</button>
+					<Button onClick={() => window.location.reload()}>Refresh Page</Button>
 					{import.meta.env.DEV && this.state.error && (
 						<pre className="mt-4 max-w-2xl overflow-auto rounded-lg bg-muted p-4 text-left text-muted-foreground text-sm">
 							{this.state.error.message}
