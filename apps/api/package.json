@@ -12,6 +12,7 @@
 	"scripts": {
 		"dev": "tsx watch --env-file=../../.env src/index.ts",
 		"build": "tsdown src/index.ts src/app.ts --format esm --dts",
+		"generate:openapi": "tsx --env-file=../../.env src/generate-openapi.ts",
 		"start": "node dist/index.mjs",
 		"lint": "biome check",
 		"format": "biome check --write",

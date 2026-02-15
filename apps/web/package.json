@@ -16,7 +16,7 @@
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"knip": "knip",
-		"typegen": "openapi-typescript http://localhost:3001/api/doc -o src/lib/api.d.ts"
+		"typegen": "openapi-typescript ../api/openapi.json -o src/lib/api.d.ts"
 	},
 	"dependencies": {
 		"@fullstack-template/shared": "workspace:*",
