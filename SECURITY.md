@@ -55,21 +55,7 @@ This document outlines security considerations and best practices for deploying 
     },
   }
   ```
-
-- [ ] **Enable Content Security Policy**
   
-  A production-ready CSP is configured in the Caddyfile in report-only mode for testing:
-  
-  ```
-  Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
-  ```
-  
-  **To enable CSP:**
-  1. Test in report-only mode first (already configured) - deploys with logging but no blocking
-  2. Monitor browser console for violations during typical usage
-  3. Once validated, change `Content-Security-Policy-Report-Only` to `Content-Security-Policy` in the Caddyfile to enforce
-  
-  **Note on `'unsafe-inline'` for styles:** This is required for Radix UI components (used by shadcn/ui) which apply inline styles for positioning and animations. The security risk is minimal since scripts are still strictly controlled.
 
 - [ ] **Set Up Security Monitoring**
   - Monitor authentication failures
@@ -114,6 +100,8 @@ This document outlines security considerations and best practices for deploying 
 ✅ **CSRF Protection**: Better Auth includes CSRF tokens for state-changing operations
 
 ✅ **Secure Session Management**: HTTP-only cookies with secure settings
+
+✅ **Content Security Policy**: Enforced CSP in Caddyfile (scripts, styles, images, fonts, connections locked to same origin)
 
 ✅ **XSS Protection Headers**: Basic headers configured in Caddyfile
 
