@@ -27,6 +27,6 @@
 		# Content Security Policy (CSP)
 		# 'unsafe-inline' for styles is required by Radix UI (shadcn/ui) for positioning/animations.
 		# To test changes in report-only mode first, rename to Content-Security-Policy-Report-Only.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 	}
 }

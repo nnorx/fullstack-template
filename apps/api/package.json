@@ -11,7 +11,7 @@
 	},
 	"scripts": {
 		"dev": "tsx watch --env-file=../../.env src/index.ts",
-		"build": "tsdown src/index.ts src/app.ts --format esm --dts",
+		"build": "tsdown src/index.ts src/app.ts src/db/migrate.ts --format esm --dts",
 		"generate:openapi": "tsx --env-file=../../.env src/generate-openapi.ts",
 		"start": "node dist/index.mjs",
 		"lint": "biome check",
@@ -23,6 +23,7 @@
 		"knip": "knip",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "tsx --env-file=../../.env src/db/migrate.ts",
+		"db:migrate:prod": "node dist/db/migrate.mjs",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
 		"db:seed": "tsx --env-file=../../.env src/db/seed.ts"
