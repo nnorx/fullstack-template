@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import { signOut, useSession } from "@/lib/auth-client";
 
 interface RouterContext {
@@ -33,6 +34,7 @@ function RootLayout() {
 
 	return (
 		<div className="flex min-h-screen flex-col bg-background text-foreground">
+			<Toaster />
 			<header className="flex items-center justify-between border-border border-b px-6 py-4">
 				<nav className="flex items-center gap-6">
 					<Link to="/" className="font-semibold text-lg">

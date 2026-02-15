@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Spinner } from "@/components/ui/spinner";
 import { useHealth } from "@/hooks/use-health";
 import { useSession } from "@/lib/auth-client";
 
@@ -50,7 +51,10 @@ function DashboardPage() {
 					<h2 className="font-semibold text-lg">API Status</h2>
 					<div className="mt-2 flex items-center gap-2">
 						{isHealthPending ? (
-							<span className="text-muted-foreground text-sm">Checking...</span>
+							<span className="flex items-center gap-2 text-muted-foreground text-sm">
+								<Spinner />
+								Checking...
+							</span>
 						) : isHealthError ? (
 							<>
 								<span className="inline-block size-2 rounded-full bg-red-500" />

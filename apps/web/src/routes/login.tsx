@@ -2,6 +2,8 @@ import { loginSchema } from "@fullstack-template/shared";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { signIn } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/login")({
@@ -65,14 +67,13 @@ function LoginPage() {
 						<label htmlFor="email" className="font-medium text-sm">
 							Email
 						</label>
-						<input
+						<Input
 							id="email"
 							type="email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							placeholder="you@example.com"
 							required
-							className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						/>
 					</div>
 
@@ -80,18 +81,18 @@ function LoginPage() {
 						<label htmlFor="password" className="font-medium text-sm">
 							Password
 						</label>
-						<input
+						<Input
 							id="password"
 							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							placeholder="Enter your password"
 							required
-							className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 						/>
 					</div>
 
 					<Button type="submit" className="w-full" disabled={loading}>
+						{loading && <Spinner />}
 						{loading ? "Signing in..." : "Sign In"}
 					</Button>
 				</form>
