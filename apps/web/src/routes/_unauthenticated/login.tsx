@@ -2,8 +2,10 @@ import { loginSchema } from "@fullstack-template/shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { signIn } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -76,15 +78,13 @@ function LoginPage() {
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{error && (
-						<div className="rounded-md bg-destructive/10 p-3 text-destructive text-sm">
-							{error}
-						</div>
+						<Alert variant="destructive">
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
 					)}
 
 					<div className="space-y-2">
-						<label htmlFor="email" className="font-medium text-sm">
-							Email
-						</label>
+						<Label htmlFor="email">Email</Label>
 						<Input
 							id="email"
 							type="email"
@@ -100,9 +100,7 @@ function LoginPage() {
 					</div>
 
 					<div className="space-y-2">
-						<label htmlFor="password" className="font-medium text-sm">
-							Password
-						</label>
+						<Label htmlFor="password">Password</Label>
 						<Input
 							id="password"
 							type="password"
