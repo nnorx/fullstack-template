@@ -257,11 +257,17 @@ git clone <repo-url> && cd fullstack-template
 cp .env.example .env
 # Edit .env: set BETTER_AUTH_SECRET, TUNNEL_TOKEN, etc.
 
-# Start all services
+# 1. Start database only (API would fail without schema)
+docker compose -f infra/docker-compose.yml up -d db
+
+# 2. Run migrations before starting the API (uses compiled migrate, no tsx required)
+docker compose -f infra/docker-compose.yml run --rm api pnpm db:migrate:prod
+
+# 3. Start the rest (API, Caddy)
 docker compose -f infra/docker-compose.yml up -d
 
-# With Cloudflare Tunnel (exposes to internet):
-docker compose -f infra/docker-compose.yml --profile tunnel up -d
+# With Cloudflare Tunnel (exposes to internet), use --profile tunnel in step 3:
+# docker compose -f infra/docker-compose.yml --profile tunnel up -d
 ```
 
 ### Cloudflare Tunnel Setup
