@@ -32,6 +32,7 @@
 		"knip": "turbo run knip",
 		"validate": "pnpm lint && pnpm type-check && pnpm test && pnpm build",
 		"check": "pnpm format && pnpm knip && pnpm validate",
+		"typegen": "pnpm --filter @fullstack-template/api generate:openapi && pnpm --filter @fullstack-template/web typegen",
 		"db:generate": "pnpm --filter @fullstack-template/api db:generate",
 		"db:migrate": "pnpm --filter @fullstack-template/api db:migrate",
 		"db:push": "pnpm --filter @fullstack-template/api db:push",

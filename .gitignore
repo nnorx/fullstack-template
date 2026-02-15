@@ -25,6 +25,9 @@ coverage
 # Database
 drizzle/meta
 
+# Generated files
+openapi.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/settings.json
