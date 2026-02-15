@@ -1,5 +1,5 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreDependencies": ["@fullstack-template/shared"],
-	"ignore": ["src/lib/api.d.ts"]
+	"ignore": ["src/lib/api.d.ts", "src/components/ui/**"]
 }

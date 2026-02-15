@@ -30,6 +30,11 @@
 			"complexity": {
 				"noExcessiveCognitiveComplexity": "warn"
 			},
+			"correctness": {
+				"noGlobalDirnameFilename": "error",
+				"noUnusedImports": "error",
+				"noUnusedVariables": "error"
+			},
 			"nursery": {
 				"useSortedClasses": "error"
 			},
