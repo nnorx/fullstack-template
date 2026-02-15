@@ -1,4 +1,4 @@
-import type { QueryClient } from "@tanstack/react-query";
+import { type QueryClient, useQueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
 	Link,
@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { signOut, useSession } from "@/lib/auth-client";
+import { queryKeys } from "@/lib/query-keys";
 
 interface RouterContext {
 	queryClient: QueryClient;
@@ -19,6 +20,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootLayout() {
+	const queryClient = useQueryClient();
 	const { data: session, isPending } = useSession();
 	const navigate = useNavigate();
 
@@ -26,6 +28,9 @@ function RootLayout() {
 		void signOut({
 			fetchOptions: {
 				onSuccess: () => {
+					queryClient.removeQueries({
+						queryKey: queryKeys.auth.session(),
+					});
 					void navigate({ to: "/" });
 				},
 			},
@@ -37,7 +42,10 @@ function RootLayout() {
 			<Toaster />
 			<header className="flex items-center justify-between border-border border-b px-6 py-4">
 				<nav className="flex items-center gap-6">
-					<Link to="/" className="font-semibold text-lg">
+					<Link
+						to={session?.user ? "/dashboard" : "/"}
+						className="font-semibold text-lg"
+					>
 						Fullstack Template
 					</Link>
 					{session?.user && (
