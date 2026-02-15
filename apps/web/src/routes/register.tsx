@@ -16,15 +16,22 @@ function RegisterPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
+		setFieldErrors({});
 
 		const result = registerSchema.safeParse({ name, email, password });
 		if (!result.success) {
-			setError(result.error.issues[0]?.message ?? "Invalid input");
+			const flat = result.error.flatten();
+			setFieldErrors({
+				name: flat.fieldErrors.name?.[0] ?? "",
+				email: flat.fieldErrors.email?.[0] ?? "",
+				password: flat.fieldErrors.password?.[0] ?? "",
+			});
 			return;
 		}
 
@@ -76,7 +83,11 @@ function RegisterPage() {
 							onChange={(e) => setName(e.target.value)}
 							placeholder="Your name"
 							required
+							aria-invalid={!!fieldErrors.name}
 						/>
+						{fieldErrors.name && (
+							<p className="text-destructive text-sm">{fieldErrors.name}</p>
+						)}
 					</div>
 
 					<div className="space-y-2">
@@ -90,7 +101,11 @@ function RegisterPage() {
 							onChange={(e) => setEmail(e.target.value)}
 							placeholder="you@example.com"
 							required
+							aria-invalid={!!fieldErrors.email}
 						/>
+						{fieldErrors.email && (
+							<p className="text-destructive text-sm">{fieldErrors.email}</p>
+						)}
 					</div>
 
 					<div className="space-y-2">
@@ -104,7 +119,11 @@ function RegisterPage() {
 							onChange={(e) => setPassword(e.target.value)}
 							placeholder="At least 8 characters"
 							required
+							aria-invalid={!!fieldErrors.password}
 						/>
+						{fieldErrors.password && (
+							<p className="text-destructive text-sm">{fieldErrors.password}</p>
+						)}
 					</div>
 
 					<Button type="submit" className="w-full" disabled={loading}>
