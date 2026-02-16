@@ -85,7 +85,7 @@ export const notFoundHandler: NotFoundHandler = (c) => {
 		{
 			error: {
 				code: "NOT_FOUND",
-				message: `Route not found: ${c.req.method} ${c.req.path}`,
+				message: "Not found",
 			},
 		},
 		404,

@@ -110,17 +110,18 @@ describe("notFoundHandler", () => {
 
 		expect(res.status).toBe(404);
 		expect(body.error.code).toBe("NOT_FOUND");
-		expect(body.error.message).toContain("GET");
-		expect(body.error.message).toContain("/api/nonexistent");
+		expect(body.error.message).toBe("Not found");
 	});
 
-	it("includes HTTP method in not-found message", async () => {
+	it("returns generic message without leaking path details", async () => {
 		const app = createTestApp();
 
 		const res = await app.request("/api/nonexistent", { method: "POST" });
 		const body = await errorBody(res);
 
 		expect(res.status).toBe(404);
-		expect(body.error.message).toContain("POST");
+		expect(body.error.message).toBe("Not found");
+		expect(body.error.message).not.toContain("POST");
+		expect(body.error.message).not.toContain("/api/nonexistent");
 	});
 });
