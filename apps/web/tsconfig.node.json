@@ -2,7 +2,6 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"tsBuildInfoFile": "./.cache/tsconfig.node.tsbuildinfo",
-		"target": "ES2023",
 		"lib": ["ES2023"],
 		"types": ["node"],
 
