@@ -1,7 +1,6 @@
 {
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"target": "ES2023",
 		"lib": ["ES2023"],
 		"types": ["node", "vitest/globals"],
 		"outDir": "dist",
