@@ -2,7 +2,7 @@
 	"name": "@fullstack-template/web",
 	"private": true,
 	"packageManager": "pnpm@10.28.0",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
