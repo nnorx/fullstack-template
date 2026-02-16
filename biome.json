@@ -83,7 +83,14 @@
 				"rules": {
 					"nursery": {
 						"useSortedClasses": "off"
-					},
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/api/src/db/**"],
+			"linter": {
+				"rules": {
 					"suspicious": {
 						"noConsole": "off"
 					}
