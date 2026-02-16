@@ -23,6 +23,11 @@ COPY apps/api/src/ ./apps/api/src/
 COPY apps/web/ ./apps/web/
 COPY tsconfig.json ./
 
+# Vite inlines VITE_* env vars at build time.
+# Pass via: docker build --build-arg VITE_SENTRY_DSN=... (or leave empty to disable)
+ARG VITE_SENTRY_DSN=""
+ENV VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
+
 # Build shared, then API types only, then web (web needs api types)
 RUN pnpm --filter @fullstack-template/shared build && \
     pnpm --filter @fullstack-template/api build && \

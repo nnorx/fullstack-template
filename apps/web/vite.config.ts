@@ -1,4 +1,5 @@
 import { fileURLToPath } from "node:url";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
@@ -6,6 +7,9 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+	// Load .env files from the monorepo root (two levels up from this config file)
+	envDir: "../../",
+
 	plugins: [
 		tanstackRouter({
 			routesDirectory: "./src/routes",
@@ -18,6 +22,22 @@ export default defineConfig({
 			},
 		}),
 		tailwindcss(),
+
+		// Upload source maps to Sentry for readable production stack traces.
+		// Only runs when SENTRY_AUTH_TOKEN is set (typically in CI/CD).
+		// The .map files are deleted after upload so they aren't served to users.
+		...(process.env.SENTRY_AUTH_TOKEN
+			? [
+					sentryVitePlugin({
+						org: process.env.SENTRY_ORG ?? "",
+						project: process.env.SENTRY_PROJECT_WEB ?? "",
+						authToken: process.env.SENTRY_AUTH_TOKEN,
+						sourcemaps: {
+							filesToDeleteAfterUpload: ["./dist/**/*.map"],
+						},
+					}),
+				]
+			: []),
 	],
 	resolve: {
 		alias: {
@@ -36,7 +56,9 @@ export default defineConfig({
 	build: {
 		minify: "esbuild",
 		cssMinify: true,
-		sourcemap: false,
+		// Generate source maps for Sentry only when uploading (hidden = not linked
+		// from JS bundles). Without the upload plugin, .map files would be served.
+		sourcemap: process.env.SENTRY_AUTH_TOKEN ? "hidden" : false,
 		rollupOptions: {
 			output: {
 				manualChunks: (id) => {
@@ -44,7 +66,8 @@ export default defineConfig({
 					if (
 						id.includes("react") &&
 						!id.includes("@tanstack") &&
-						!id.includes("lucide")
+						!id.includes("lucide") &&
+						!id.includes("@sentry")
 					) {
 						return "vendor-react";
 					}
@@ -64,6 +87,10 @@ export default defineConfig({
 					// Lucide icons (tree-shakeable but still large)
 					if (id.includes("lucide-react")) {
 						return "vendor-icons";
+					}
+					// Sentry SDK
+					if (id.includes("@sentry")) {
+						return "vendor-sentry";
 					}
 					// Other vendor dependencies
 					if (

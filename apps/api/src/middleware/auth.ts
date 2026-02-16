@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import type { MiddlewareHandler } from "hono";
 import { type Auth, auth } from "../lib/auth.ts";
 import { AppError } from "../lib/errors.ts";
@@ -42,6 +43,13 @@ export const requireAuth: MiddlewareHandler<AuthEnv> = async (c, next) => {
 
 	c.set("user", session.user);
 	c.set("session", session.session);
+
+	// Attach user context to Sentry so errors include who was affected.
+	// Sentry's httpIntegration isolates scopes per request via AsyncLocalStorage.
+	Sentry.setUser({
+		id: session.user.id,
+		email: session.user.email,
+	});
 
 	await next();
 };

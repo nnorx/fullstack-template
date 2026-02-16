@@ -29,6 +29,7 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:?Set FRONTEND_URL in .env}
       API_PORT: "3001"
       NODE_ENV: production
+      SENTRY_DSN: ${SENTRY_DSN:-}
     depends_on:
       db:
         condition: service_healthy
@@ -39,6 +40,8 @@ services:
     build:
       context: ..
       dockerfile: infra/Dockerfile.web
+      args:
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
     restart: unless-stopped
     ports:
       - "80:80"

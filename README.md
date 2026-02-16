@@ -236,6 +236,76 @@ app.get("/api/admin", requireAuth, requireAdmin, (c) => {
 });
 ```
 
+## Observability
+
+Error tracking, performance monitoring, and session replay are provided by [Sentry](https://sentry.io/).
+
+### Setup
+
+1. Create two Sentry projects: one for **React** (frontend) and one for **Hono/Node.js** (backend)
+2. Copy the DSN for each project into your `.env`:
+
+```bash
+# Backend (Hono)
+SENTRY_DSN=https://...@o....ingest.us.sentry.io/...
+
+# Frontend (React) — must be prefixed with VITE_
+VITE_SENTRY_DSN=https://...@o....ingest.us.sentry.io/...
+```
+
+3. Restart the dev servers — Sentry is now active
+
+When the DSN environment variables are not set, Sentry is completely disabled and adds zero overhead.
+
+### What's Captured
+
+| Feature | Frontend | Backend |
+|---------|----------|---------|
+| Error tracking | React ErrorBoundary + unhandled exceptions | All 5xx errors via error handler middleware |
+| Performance traces | Page loads, navigations, fetch requests | API request spans, database queries |
+| Session replay | Replays user actions leading to errors | - |
+| Profiling | - | CPU profiling for sampled traces |
+| Request correlation | Sends `X-Request-ID` on every API call | Tags Sentry events with `X-Request-ID` |
+| User context | - | Attaches user ID and email on authenticated requests |
+
+### Testing the Integration
+
+In development mode, test buttons are available on the `/dashboard` page (after login):
+- **Test Backend Error** - Triggers `/api/test/sentry-error`, should appear in backend Sentry project with request ID and user context
+- **Test Frontend Error** - Throws a React error caught by ErrorBoundary, should appear in frontend Sentry project with component stack
+- **Test Manual Capture** - Manually calls `Sentry.captureException()`, should appear in frontend Sentry project
+
+After clicking a test button, check your Sentry dashboard:
+1. Verify the error appears in the correct project (frontend or backend)
+2. Check that `request_id` tag is present and matches between frontend/backend events
+3. Verify user context is attached (email, user ID)
+4. Check that breadcrumbs show the API calls leading to the error
+
+### Source Maps
+
+Production builds generate hidden source maps. To upload them to Sentry for readable stack traces, set these environment variables in CI/CD:
+
+```bash
+SENTRY_AUTH_TOKEN=sntrys_...   # From Sentry Settings → Auth Tokens
+SENTRY_ORG=your-org
+SENTRY_PROJECT_WEB=your-web-project
+```
+
+The `@sentry/vite-plugin` automatically uploads source maps during `vite build` and deletes the `.map` files afterward so they are never served to users.
+
+### Sampling Rates
+
+Default sampling rates are tuned for Sentry's free tier (5k events/month):
+
+| Setting | Development | Production |
+|---------|-------------|------------|
+| Traces | 100% | 10% |
+| Session replay (normal) | 0% | 10% |
+| Session replay (on error) | 100% | 100% |
+| Profiling | 100% of traces | 100% of traces |
+
+Adjust in `apps/api/src/instrument.ts` and `apps/web/src/lib/sentry.ts`.
+
 ## Deployment
 
 ### Security First! 🔒
@@ -294,6 +364,11 @@ GitHub Actions automatically:
 | `BETTER_AUTH_URL` | No | `http://localhost:3001` | Backend URL for auth |
 | `API_PORT` | No | `3001` | Port for the API server |
 | `VITE_API_URL` | No | `""` | API URL for the frontend |
+| `SENTRY_DSN` | No | - | Backend Sentry DSN for error tracking |
+| `VITE_SENTRY_DSN` | No | - | Frontend Sentry DSN for error tracking |
+| `SENTRY_AUTH_TOKEN` | For CI/CD | - | Sentry auth token for source map uploads |
+| `SENTRY_ORG` | For CI/CD | - | Sentry organization slug |
+| `SENTRY_PROJECT_WEB` | For CI/CD | - | Sentry project slug (frontend) |
 | `TUNNEL_TOKEN` | For tunnel | - | Cloudflare Tunnel token |
 
 ## License

@@ -12,6 +12,7 @@ import {
 } from "./middleware/request-id.ts";
 import { authRoutes } from "./routes/auth.ts";
 import { healthRoutes } from "./routes/health.ts";
+import { testRoutes } from "./routes/test.ts";
 
 const isDev = env.NODE_ENV === "development";
 
@@ -67,7 +68,14 @@ app.use(
 		},
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-		allowHeaders: ["Content-Type", "Authorization", REQUEST_ID_HEADER],
+		allowHeaders: [
+			"Content-Type",
+			"Authorization",
+			REQUEST_ID_HEADER,
+			// Sentry distributed tracing headers
+			"sentry-trace",
+			"baggage",
+		],
 		exposeHeaders: [REQUEST_ID_HEADER],
 	}),
 );
@@ -80,6 +88,11 @@ app.use("/api/auth/*", authLimiter);
 // ── Routes ─────────────────────────────────────────────────────────
 app.route("/api/auth", authRoutes);
 app.route("/api/health", healthRoutes);
+
+// Test routes (only in development)
+if (isDev) {
+	app.route("/api/test", testRoutes);
+}
 
 // ── OpenAPI Documentation ──────────────────────────────────────────
 app.doc31("/api/doc", (c) => ({

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import createClient, { type Middleware } from "openapi-fetch";
 import type { paths } from "./api.d.ts";
 import { ApiError } from "./api-error.ts";
@@ -29,6 +30,32 @@ export async function handleErrorResponse(response: Response): Promise<void> {
 	throw ApiError.fromResponse(response.status, body);
 }
 
+/**
+ * Attach an `X-Request-ID` header to every outgoing API request so that
+ * frontend and backend events can be correlated in logs and Sentry.
+ *
+ * The backend request-id middleware will echo the same ID back in the
+ * response header, creating a full round-trip trace.
+ */
+const requestIdMiddleware: Middleware = {
+	onRequest: ({ request }) => {
+		const requestId = crypto.randomUUID();
+		request.headers.set("X-Request-ID", requestId);
+
+		// Record as a Sentry breadcrumb so it appears in error context.
+		// Extract pathname for a cleaner message; fall back to full URL.
+		const path = URL.canParse(request.url)
+			? new URL(request.url).pathname
+			: request.url;
+		Sentry.addBreadcrumb({
+			category: "api",
+			message: `${request.method} ${path}`,
+			data: { requestId },
+			level: "info",
+		});
+	},
+};
+
 const errorMiddleware: Middleware = {
 	onResponse: ({ response }) => handleErrorResponse(response),
 };
@@ -53,4 +80,5 @@ export const client = createClient<paths>({
 	credentials: "include",
 });
 
+client.use(requestIdMiddleware);
 client.use(errorMiddleware);

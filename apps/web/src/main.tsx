@@ -1,3 +1,6 @@
+// Sentry must be imported before other app code so it can instrument everything.
+import "./lib/sentry.ts";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";

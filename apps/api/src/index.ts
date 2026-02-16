@@ -1,3 +1,6 @@
+// Sentry must be imported before everything else so it can hook into Node.js.
+import "./instrument.ts";
+
 import { serve } from "@hono/node-server";
 import app from "./app.ts";
 import { closeDatabase } from "./db/index.ts";
