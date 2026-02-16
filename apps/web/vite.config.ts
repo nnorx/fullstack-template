@@ -1,9 +1,9 @@
-import { fileURLToPath } from "node:url";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -22,6 +22,7 @@ export default defineConfig({
 			},
 		}),
 		tailwindcss(),
+		tsconfigPaths(),
 
 		// Upload source maps to Sentry for readable production stack traces.
 		// Only runs when SENTRY_AUTH_TOKEN is set (typically in CI/CD).
@@ -40,9 +41,6 @@ export default defineConfig({
 			: []),
 	],
 	resolve: {
-		alias: {
-			"@": fileURLToPath(new URL("./src", import.meta.url)),
-		},
 		conditions: ["source"],
 	},
 	server: {
