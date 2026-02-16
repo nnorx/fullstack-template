@@ -12,6 +12,7 @@
 		},
 
 		/* Bundler mode */
+		// Allow importing .ts files for type-checking; build tools (Vite) handle .ts imports
 		"allowImportingTsExtensions": true,
 		"noEmit": true,
 		"jsx": "react-jsx"

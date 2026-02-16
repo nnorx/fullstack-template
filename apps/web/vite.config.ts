@@ -5,6 +5,12 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+/**
+ * Vite configuration runs at build time, before the application starts.
+ * Environment variables like SENTRY_AUTH_TOKEN and SENTRY_ORG are read directly
+ * from process.env (not from the validated env schema) because runtime validation
+ * isn't available during the build phase.
+ */
 // https://vite.dev/config/
 export default defineConfig({
 	// Load .env files from the monorepo root (two levels up from this config file)

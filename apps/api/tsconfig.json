@@ -5,6 +5,7 @@
 		"lib": ["ES2023"],
 		"types": ["node", "vitest/globals"],
 		"outDir": "dist",
+		// Allow importing .ts files for type-checking; build tools (tsdown) handle .ts imports
 		"allowImportingTsExtensions": true,
 		"noEmit": true
 	},
