@@ -203,7 +203,7 @@ importers:
         specifier: ^28.0.0
         version: 28.1.0(@noble/hashes@2.0.1)
       knip:
-        specifier: ^5.82.1
+        specifier: ^5.83.1
         version: 5.83.1(@types/node@25.2.3)(typescript@5.9.3)
       openapi-typescript:
         specifier: ^7.13.0
