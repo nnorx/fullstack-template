@@ -3,9 +3,10 @@ import { logger } from "./logger.ts";
 
 const envSchema = z.object({
 	DATABASE_URL: z.url({ error: "DATABASE_URL must be a valid URL" }),
-	BETTER_AUTH_SECRET: z
-		.string()
-		.min(1, { error: "BETTER_AUTH_SECRET is required" }),
+	BETTER_AUTH_SECRET: z.string().min(32, {
+		error:
+			"BETTER_AUTH_SECRET must be at least 32 characters. Generate one with: openssl rand -base64 32",
+	}),
 	BETTER_AUTH_URL: z
 		.url({ error: "BETTER_AUTH_URL must be a valid URL" })
 		.default("http://localhost:3001"),

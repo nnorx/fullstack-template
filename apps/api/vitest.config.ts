@@ -7,7 +7,7 @@ export default defineConfig({
 		include: ["src/**/*.{test,spec}.ts"],
 		env: {
 			DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/test",
-			BETTER_AUTH_SECRET: "test-secret-for-vitest",
+			BETTER_AUTH_SECRET: "test-secret-for-vitest-must-be-32-chars-long",
 			BETTER_AUTH_URL: "http://localhost:3001",
 			API_PORT: "3001",
 			NODE_ENV: "test",
