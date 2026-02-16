@@ -24,12 +24,12 @@ function DashboardPage() {
 	const user = session?.user;
 
 	const [testStatus, setTestStatus] = useState<string>("");
+	const [shouldThrow, setShouldThrow] = useState(false);
 
-	const testFrontendError = () => {
-		setTestStatus("Throwing frontend error...");
-		// This will be caught by ErrorBoundary and sent to Sentry
+	// Throw during render so React's ErrorBoundary catches it and reports to Sentry.
+	if (shouldThrow) {
 		throw new Error("Test error from React - Sentry should capture this!");
-	};
+	}
 
 	const testBackendError = async () => {
 		setTestStatus("Calling backend test endpoint...");
@@ -145,7 +145,10 @@ function DashboardPage() {
 								<Button onClick={testBackendError} variant="destructive">
 									Test Backend Error
 								</Button>
-								<Button onClick={testFrontendError} variant="destructive">
+								<Button
+									onClick={() => setShouldThrow(true)}
+									variant="destructive"
+								>
 									Test Frontend Error (ErrorBoundary)
 								</Button>
 								<Button onClick={testManualCapture} variant="outline">

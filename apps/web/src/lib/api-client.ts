@@ -43,9 +43,13 @@ const requestIdMiddleware: Middleware = {
 		request.headers.set("X-Request-ID", requestId);
 
 		// Record as a Sentry breadcrumb so it appears in error context.
+		// Extract pathname for a cleaner message; fall back to full URL.
+		const path = URL.canParse(request.url)
+			? new URL(request.url).pathname
+			: request.url;
 		Sentry.addBreadcrumb({
 			category: "api",
-			message: `${request.method} ${new URL(request.url).pathname}`,
+			message: `${request.method} ${path}`,
 			data: { requestId },
 			level: "info",
 		});

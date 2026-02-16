@@ -37,7 +37,8 @@ export const requestIdMiddleware: MiddlewareHandler<RequestIdEnv> = async (
 	c.set("requestId", id);
 	c.header(REQUEST_ID_HEADER, id);
 
-	// Tag Sentry so every event in this request includes the request ID.
+	// Sentry's httpIntegration automatically creates per-request isolation
+	// scopes via AsyncLocalStorage, so setTag here is already request-scoped.
 	Sentry.setTag("request_id", id);
 
 	await next();

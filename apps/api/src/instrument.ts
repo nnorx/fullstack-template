@@ -30,7 +30,7 @@ if (dsn) {
 		profileLifecycle: "trace",
 
 		// Send default PII (e.g. IP addresses) — useful for debugging.
-		// Disable in SECURITY.md if stricter privacy is required.
+		// Set to false here if stricter privacy requirements apply.
 		sendDefaultPii: true,
 	});
 }

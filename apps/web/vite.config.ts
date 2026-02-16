@@ -56,8 +56,9 @@ export default defineConfig({
 	build: {
 		minify: "esbuild",
 		cssMinify: true,
-		// Generate source maps for Sentry (hidden = not linked from JS bundles).
-		sourcemap: "hidden",
+		// Generate source maps for Sentry only when uploading (hidden = not linked
+		// from JS bundles). Without the upload plugin, .map files would be served.
+		sourcemap: process.env.SENTRY_AUTH_TOKEN ? "hidden" : false,
 		rollupOptions: {
 			output: {
 				manualChunks: (id) => {

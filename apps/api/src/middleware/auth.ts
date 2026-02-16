@@ -45,6 +45,7 @@ export const requireAuth: MiddlewareHandler<AuthEnv> = async (c, next) => {
 	c.set("session", session.session);
 
 	// Attach user context to Sentry so errors include who was affected.
+	// Sentry's httpIntegration isolates scopes per request via AsyncLocalStorage.
 	Sentry.setUser({
 		id: session.user.id,
 		email: session.user.email,

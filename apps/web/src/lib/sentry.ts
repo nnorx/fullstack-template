@@ -32,9 +32,7 @@ if (dsn) {
 		tracePropagationTargets: [
 			"localhost",
 			/^\/api\//,
-			...(import.meta.env.VITE_API_URL
-				? [new RegExp(`^${import.meta.env.VITE_API_URL}`)]
-				: []),
+			...(import.meta.env.VITE_API_URL ? [import.meta.env.VITE_API_URL] : []),
 		],
 
 		// ── Session Replay ─────────────────────────────────────────
