@@ -1,5 +1,6 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono, z } from "@hono/zod-openapi";
+import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { rateLimiter } from "hono-rate-limiter";
 import { env } from "./lib/env.ts";
@@ -80,6 +81,9 @@ app.use(
 	}),
 );
 
+// Reject request bodies larger than 1MB
+app.use("*", bodyLimit({ maxSize: 1024 * 1024 }));
+
 // General rate limiter for all routes (skips auth routes internally)
 app.use("*", apiLimiter);
 // Auth routes get their own stricter rate limiter
@@ -94,23 +98,25 @@ if (isDev) {
 	app.route("/api/test", testRoutes);
 }
 
-// ── OpenAPI Documentation ──────────────────────────────────────────
-app.doc31("/api/doc", (c) => ({
-	openapi: "3.1.0",
-	info: {
-		title: "Fullstack Template API",
-		version: "1.0.0",
-		description: "API documentation for the fullstack template",
-	},
-	servers: [
-		{
-			url: new URL(c.req.url).origin,
-			description: "Current environment",
+// ── OpenAPI Documentation (development only) ─────────────────────
+if (isDev) {
+	app.doc31("/api/doc", (c) => ({
+		openapi: "3.1.0",
+		info: {
+			title: "Fullstack Template API",
+			version: "1.0.0",
+			description: "API documentation for the fullstack template",
 		},
-	],
-}));
+		servers: [
+			{
+				url: new URL(c.req.url).origin,
+				description: "Current environment",
+			},
+		],
+	}));
 
-app.get("/api/ui", swaggerUI({ url: "/api/doc" }));
+	app.get("/api/ui", swaggerUI({ url: "/api/doc" }));
+}
 
 // ── Error Handling ─────────────────────────────────────────────────
 app.onError(errorHandler);
