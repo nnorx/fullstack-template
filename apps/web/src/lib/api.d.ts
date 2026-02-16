@@ -52,6 +52,109 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/api/test/sentry-error": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Test Sentry Error Capture
+		 * @description Throws an error to verify Sentry is capturing backend exceptions
+		 */
+		get: {
+			parameters: {
+				query?: never;
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Throws an error to test Sentry integration */
+				500: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/json": components["schemas"]["ErrorResponse"];
+					};
+				};
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/api/test/admin-only": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Test Admin Access
+		 * @description Endpoint that requires admin role to access
+		 */
+		get: {
+			parameters: {
+				query?: never;
+				header?: never;
+				path?: never;
+				cookie?: never;
+			};
+			requestBody?: never;
+			responses: {
+				/** @description Success - user has admin role */
+				200: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/json": {
+							message: string;
+							user: {
+								id: string;
+								email: string;
+								role: string;
+							};
+						};
+					};
+				};
+				/** @description Unauthorized - no valid session */
+				401: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/json": components["schemas"]["ErrorResponse"];
+					};
+				};
+				/** @description Forbidden - user is not an admin */
+				403: {
+					headers: {
+						[name: string]: unknown;
+					};
+					content: {
+						"application/json": components["schemas"]["ErrorResponse"];
+					};
+				};
+			};
+		};
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -67,6 +170,13 @@ export interface components {
 			status: "unhealthy";
 			timestamp: string;
 			error: string;
+		};
+		ErrorResponse: {
+			error: {
+				code: string;
+				message: string;
+				details?: unknown;
+			};
 		};
 	};
 	responses: never;

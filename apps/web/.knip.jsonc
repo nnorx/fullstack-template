@@ -1,0 +1,8 @@
+{
+	// Workspace dependencies and esbuild (used in vite.config.ts) aren't properly traced by Knip
+	"ignoreDependencies": ["@fullstack-template/shared", "esbuild"],
+	"ignore": [
+		"src/lib/api.d.ts", // Generated OpenAPI types
+		"src/components/ui/**" // Shared UI component library
+	]
+}

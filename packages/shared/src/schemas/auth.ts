@@ -4,7 +4,7 @@ export const loginSchema = z.object({
 	email: z.email({ error: "Invalid email address" }),
 	password: z
 		.string()
-		.min(8, { error: "Password must be at least 8 characters" }),
+		.min(12, { error: "Password must be at least 12 characters" }),
 });
 
 export const registerSchema = z.object({
@@ -29,17 +29,8 @@ export const registerSchema = z.object({
 		}),
 });
 
-export const userProfileSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	email: z.email(),
-	role: z.enum(["user", "admin"]),
-	image: z.string().nullable().optional(),
-	createdAt: z.coerce.date(),
-	updatedAt: z.coerce.date(),
-});
-
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
-export type UserProfile = z.infer<typeof userProfileSchema>;
-export type UserRole = UserProfile["role"];
+
+// User role enum - used by both frontend and backend
+export type UserRole = "user" | "admin";

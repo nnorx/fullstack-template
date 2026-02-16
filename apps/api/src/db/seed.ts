@@ -8,13 +8,13 @@ import { member, organization, user } from "./schema/auth.ts";
 const SEED_ADMIN = {
 	name: "Admin",
 	email: "admin@example.com",
-	password: "password",
+	password: "TestPassword1!",
 } as const;
 
 const SEED_USER = {
 	name: "Test User",
 	email: "user@example.com",
-	password: "password",
+	password: "TestPassword1!",
 } as const;
 
 const SEED_ORG = {

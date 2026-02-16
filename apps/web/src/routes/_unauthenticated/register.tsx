@@ -1,4 +1,5 @@
 import { registerSchema } from "@fullstack-template/shared";
+import * as Sentry from "@sentry/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -62,7 +63,13 @@ function RegisterPage() {
 				});
 				await navigate({ to: redirect ?? "/dashboard" });
 			}
-		} catch {
+		} catch (err) {
+			// Log in development, report to Sentry in production
+			if (import.meta.env.DEV) {
+				console.error("Registration error:", err);
+			} else {
+				Sentry.captureException(err);
+			}
 			setError("An unexpected error occurred");
 		} finally {
 			setLoading(false);
@@ -125,7 +132,7 @@ function RegisterPage() {
 							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							placeholder="At least 8 characters"
+							placeholder="Min 12 chars, uppercase, lowercase, number, special"
 							required
 							aria-invalid={!!fieldErrors.password}
 						/>

@@ -7,7 +7,7 @@ A modern fullstack monorepo template with end-to-end type safety, designed for s
 
 ## Stack
 
-**Frontend** (`apps/web`): React 19, TypeScript, Vite (rolldown), Tailwind CSS v4, TanStack Router, React Query, shadcn/ui
+**Frontend** (`apps/web`): React 19, TypeScript, Vite, Tailwind CSS v4, TanStack Router, React Query, shadcn/ui
 
 **Backend** (`apps/api`): Hono, TypeScript, Drizzle ORM, PostgreSQL, Better Auth (email + RBAC)
 
@@ -230,11 +230,13 @@ app.get("/api/protected", requireAuth, (c) => {
   return c.json({ user });
 });
 
-// Admin-only route
+// Admin-only route (must use requireAuth first)
 app.get("/api/admin", requireAuth, requireAdmin, (c) => {
   return c.json({ message: "Admin access" });
 });
 ```
+
+Note: `requireAdmin` must be used **after** `requireAuth` to ensure there's a valid session.
 
 ## Observability
 
