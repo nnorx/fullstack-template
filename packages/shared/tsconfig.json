@@ -4,6 +4,7 @@
 		"outDir": "dist",
 		"declaration": true,
 		"declarationMap": true,
+		// Allow importing .ts files for type-checking; build tools (tsdown) handle .ts imports
 		"allowImportingTsExtensions": true,
 		"noEmit": true
 	},

@@ -2,6 +2,11 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 
+/**
+ * Migration script reads DATABASE_URL directly from process.env (not from the
+ * validated env schema) because migrations run before the application initializes.
+ * This is a standalone script executed via `pnpm migrate`.
+ */
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
 	console.error("DATABASE_URL environment variable is required");
