@@ -1,0 +1,8 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(pnpm *)",
+			"Bash(docker compose -f infra/docker-compose.dev.yml *)"
+		]
+	}
+}
