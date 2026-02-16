@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import * as Sentry from "@sentry/node";
 import type { MiddlewareHandler } from "hono";
 
 export const REQUEST_ID_HEADER = "X-Request-ID";
@@ -23,6 +24,9 @@ export type RequestIdEnv = {
  * Generates or forwards a request ID for tracing.
  * Reads X-Request-ID from the request; if missing or invalid (not UUID or too long),
  * generates a new UUID. Sets the value on the response and on c.get("requestId").
+ *
+ * Tags the current Sentry scope with the request ID so errors, traces, and
+ * breadcrumbs can be correlated end-to-end (frontend → backend → Sentry).
  */
 export const requestIdMiddleware: MiddlewareHandler<RequestIdEnv> = async (
 	c,
@@ -32,5 +36,9 @@ export const requestIdMiddleware: MiddlewareHandler<RequestIdEnv> = async (
 	const id = trimmed && isValidRequestId(trimmed) ? trimmed : randomUUID();
 	c.set("requestId", id);
 	c.header(REQUEST_ID_HEADER, id);
+
+	// Tag Sentry so every event in this request includes the request ID.
+	Sentry.setTag("request_id", id);
+
 	await next();
 };

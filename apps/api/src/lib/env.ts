@@ -19,6 +19,8 @@ const envSchema = z.object({
 	LOG_LEVEL: z
 		.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
 		.default("info"),
+	/** Sentry DSN for error tracking and performance monitoring. Optional — when unset Sentry is disabled. */
+	SENTRY_DSN: z.url({ error: "SENTRY_DSN must be a valid URL" }).optional(),
 });
 
 /**

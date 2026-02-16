@@ -1,7 +1,11 @@
+import * as Sentry from "@sentry/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { useHealth } from "@/hooks/use-health";
+import { client } from "@/lib/api-client";
 import { useSession } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -18,6 +22,35 @@ function DashboardPage() {
 
 	// Session is guaranteed by the _authenticated layout's beforeLoad guard
 	const user = session?.user;
+
+	const [testStatus, setTestStatus] = useState<string>("");
+
+	const testFrontendError = () => {
+		setTestStatus("Throwing frontend error...");
+		// This will be caught by ErrorBoundary and sent to Sentry
+		throw new Error("Test error from React - Sentry should capture this!");
+	};
+
+	const testBackendError = async () => {
+		setTestStatus("Calling backend test endpoint...");
+		try {
+			// @ts-expect-error - This route exists but isn't in the OpenAPI spec
+			await client.GET("/api/test/sentry-error");
+			setTestStatus("Backend responded (should have errored)");
+		} catch (err) {
+			setTestStatus(
+				`Backend error captured! Check Sentry. Error: ${err instanceof Error ? err.message : "Unknown"}`,
+			);
+		}
+	};
+
+	const testManualCapture = () => {
+		setTestStatus("Manually capturing to Sentry...");
+		Sentry.captureException(
+			new Error("Manually captured test error from frontend"),
+		);
+		setTestStatus("Manually captured error sent to Sentry!");
+	};
 
 	return (
 		<div className="flex flex-1 flex-col p-6">
@@ -96,6 +129,35 @@ function DashboardPage() {
 						</div>
 					</CardContent>
 				</Card>
+
+				{import.meta.env.DEV && (
+					<Card>
+						<CardHeader>
+							<CardTitle>Sentry Test (Development Only)</CardTitle>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							<p className="text-muted-foreground text-sm">
+								These buttons test the Sentry integration. Check your Sentry
+								dashboard to verify errors are captured with request IDs and
+								user context.
+							</p>
+							<div className="flex flex-wrap gap-2">
+								<Button onClick={testBackendError} variant="destructive">
+									Test Backend Error
+								</Button>
+								<Button onClick={testFrontendError} variant="destructive">
+									Test Frontend Error (ErrorBoundary)
+								</Button>
+								<Button onClick={testManualCapture} variant="outline">
+									Test Manual Capture
+								</Button>
+							</div>
+							{testStatus && (
+								<p className="rounded-md bg-muted p-3 text-sm">{testStatus}</p>
+							)}
+						</CardContent>
+					</Card>
+				)}
 			</div>
 		</div>
 	);

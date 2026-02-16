@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import type { ErrorHandler, NotFoundHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
@@ -12,10 +13,18 @@ import { logger } from "../lib/logger.ts";
  * 1. `AppError`      → structured response with the intended status code.
  * 2. `HTTPException` → compatibility with Hono ecosystem middleware.
  * 3. Unknown error   → 500 with no internal details leaked in production.
+ *
+ * All unhandled errors (5xx) are reported to Sentry with request context.
+ * Client errors (4xx AppErrors) are intentional and not reported.
  */
 export const errorHandler: ErrorHandler = (err, c) => {
 	// ── AppError (our own) ──────────────────────────────────────────
 	if (err instanceof AppError) {
+		// Only report server errors to Sentry — client errors are intentional.
+		if (err.statusCode >= 500) {
+			Sentry.captureException(err);
+		}
+
 		return c.json<ErrorResponse>(
 			{
 				error: {
@@ -31,6 +40,10 @@ export const errorHandler: ErrorHandler = (err, c) => {
 
 	// ── HTTPException (Hono built-in) ───────────────────────────────
 	if (err instanceof HTTPException) {
+		if (err.status >= 500) {
+			Sentry.captureException(err);
+		}
+
 		return c.json<ErrorResponse>(
 			{
 				error: {
@@ -45,6 +58,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
 
 	// ── Unknown error ───────────────────────────────────────────────
 	logger.error({ err }, "Unhandled error");
+	Sentry.captureException(err);
 
 	return c.json<ErrorResponse>(
 		{
