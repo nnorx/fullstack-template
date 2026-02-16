@@ -55,6 +55,12 @@
 		"onlyBuiltDependencies": [
 			"@sentry-internal/node-cpu-profiler",
 			"@sentry/cli"
-		]
+		],
+		"overrides": {
+			"esbuild@<=0.24.2": ">=0.25.0"
+		},
+		"comments": {
+			"overrides.esbuild": "Fixes GHSA-67mh-4wv8-2f99 in drizzle-kit's deprecated @esbuild-kit dependency. Remove when drizzle-kit 1.0 stable releases."
+		}
 	}
 }
