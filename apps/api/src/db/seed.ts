@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { auth } from "../lib/auth.ts";
+import { env } from "../lib/env.ts";
 import { db } from "./index.ts";
 import { member, organization, user } from "./schema/auth.ts";
 
@@ -112,6 +113,14 @@ async function ensureMember(
 // ── Main ────────────────────────────────────────────────────────────
 
 async function seed() {
+	// Prevent accidental seeding in production
+	if (env.NODE_ENV === "production") {
+		console.error(
+			"❌ Cannot run seed script in production environment. Set NODE_ENV to development or test.",
+		);
+		process.exit(1);
+	}
+
 	console.log("\nSeeding database...\n");
 
 	// 1. Create users via Better Auth (handles password hashing + account row)
