@@ -5,13 +5,18 @@ import { nodeProfilingIntegration } from "@sentry/profiling-node";
  * Sentry must be initialized before any other imports.
  * This file is imported at the very top of `index.ts`.
  *
- * Reads SENTRY_DSN directly from process.env (not the validated env schema)
- * to avoid circular dependencies — the env validator depends on the logger
- * which must be imported after Sentry.
+ * Reads SENTRY_DSN and SENTRY_SEND_DEFAULT_PII directly from process.env
+ * (not the validated env schema) to avoid circular dependencies — the env
+ * validator depends on the logger which must be imported after Sentry.
  *
  * When SENTRY_DSN is not set, Sentry is disabled and all calls are no-ops.
  */
 const dsn = process.env.SENTRY_DSN;
+
+// Parse SENTRY_SEND_DEFAULT_PII (defaults to false for privacy)
+// Set to "true" to send IP addresses and other PII to Sentry
+const sendDefaultPii =
+	process.env.SENTRY_SEND_DEFAULT_PII?.toLowerCase() === "true";
 
 if (dsn) {
 	Sentry.init({
@@ -29,8 +34,8 @@ if (dsn) {
 		profileSessionSampleRate: 1.0,
 		profileLifecycle: "trace",
 
-		// Send default PII (e.g. IP addresses) — useful for debugging.
-		// Set to false here if stricter privacy requirements apply.
-		sendDefaultPii: true,
+		// Send default PII (e.g. IP addresses) — configurable via env var.
+		// Defaults to false for privacy compliance (GDPR).
+		sendDefaultPii,
 	});
 }
