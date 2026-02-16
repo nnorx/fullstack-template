@@ -24,6 +24,9 @@
 		Referrer-Policy strict-origin-when-cross-origin
 		X-XSS-Protection "1; mode=block"
 		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		# HSTS: Force HTTPS for 2 years (effective when HTTPS is enabled)
+		# When using Cloudflare Tunnel, HTTPS is handled upstream
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 		# Content Security Policy (CSP)
 		# 'unsafe-inline' for styles is required by Radix UI (shadcn/ui) for positioning/animations.
 		# To test changes in report-only mode first, rename to Content-Security-Policy-Report-Only.
