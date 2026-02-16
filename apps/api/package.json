@@ -29,6 +29,7 @@
 		"db:seed": "tsx --env-file=../../.env src/db/seed.ts"
 	},
 	"dependencies": {
+		"@fullstack-template/shared": "workspace:*",
 		"@hono/node-server": "^1",
 		"@hono/swagger-ui": "^0.5.3",
 		"@hono/zod-openapi": "^1.2.1",

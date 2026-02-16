@@ -82,3 +82,29 @@ export const optionalAuth: MiddlewareHandler<OptionalAuthEnv> = async (
 
 	await next();
 };
+
+/**
+ * Require admin role. Must be used after `requireAuth`.
+ *
+ * Throws 403 if the authenticated user does not have the "admin" role.
+ *
+ * @example
+ * ```ts
+ * const adminRoutes = new Hono<AuthEnv>()
+ *   .use("*", requireAuth)
+ *   .use("*", requireAdmin)
+ *   .get("/users", (c) => {
+ *     // Only admins can access this
+ *     return c.json({ users: [] });
+ *   });
+ * ```
+ */
+export const requireAdmin: MiddlewareHandler<AuthEnv> = async (c, next) => {
+	const user = c.get("user");
+
+	if (user.role !== "admin") {
+		throw AppError.forbidden("Admin access required");
+	}
+
+	await next();
+};

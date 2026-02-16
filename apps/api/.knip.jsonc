@@ -1,0 +1,4 @@
+{
+	// Workspace dependencies aren't properly traced by Knip
+	"ignoreDependencies": ["@fullstack-template/shared"]
+}

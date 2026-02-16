@@ -12,7 +12,7 @@
 	},
 	"scripts": {
 		"build": "tsdown src/index.ts --format esm --dts",
-		"dev": "tsdown src/index.ts --format esm --dts --watch",
+		"dev": "tsdown src/index.ts --format esm --dts --watch --no-clean",
 		"lint": "biome check",
 		"format": "biome check --write",
 		"type-check": "tsc --noEmit",

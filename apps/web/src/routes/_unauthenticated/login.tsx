@@ -1,4 +1,5 @@
 import { loginSchema } from "@fullstack-template/shared";
+import * as Sentry from "@sentry/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -59,7 +60,13 @@ function LoginPage() {
 				});
 				await navigate({ to: redirect ?? "/dashboard" });
 			}
-		} catch {
+		} catch (err) {
+			// Log in development, report to Sentry in production
+			if (import.meta.env.DEV) {
+				console.error("Login error:", err);
+			} else {
+				Sentry.captureException(err);
+			}
 			setError("An unexpected error occurred");
 		} finally {
 			setLoading(false);

@@ -26,7 +26,7 @@ function DashboardPage() {
 	const [testStatus, setTestStatus] = useState<string>("");
 	const [shouldThrow, setShouldThrow] = useState(false);
 
-	// Throw during render so React's ErrorBoundary catches it and reports to Sentry.
+	// Throw during render so ErrorBoundary can catch it
 	if (shouldThrow) {
 		throw new Error("Test error from React - Sentry should capture this!");
 	}
@@ -34,7 +34,6 @@ function DashboardPage() {
 	const testBackendError = async () => {
 		setTestStatus("Calling backend test endpoint...");
 		try {
-			// @ts-expect-error - This route exists but isn't in the OpenAPI spec
 			await client.GET("/api/test/sentry-error");
 			setTestStatus("Backend responded (should have errored)");
 		} catch (err) {
