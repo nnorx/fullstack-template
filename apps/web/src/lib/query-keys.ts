@@ -28,4 +28,37 @@ export const queryKeys = {
 		all: ["health"] as const,
 		check: () => [...queryKeys.health.all, "check"] as const,
 	},
+	projects: {
+		all: ["projects"] as const,
+		list: (page?: number) => [...queryKeys.projects.all, "list", page] as const,
+		detail: (id: string) => [...queryKeys.projects.all, "detail", id] as const,
+	},
+	projectMembers: {
+		all: ["projectMembers"] as const,
+		list: (projectId: string) =>
+			[...queryKeys.projectMembers.all, "list", projectId] as const,
+	},
+	posts: {
+		all: ["posts"] as const,
+		list: (projectId: string, page?: number) =>
+			[...queryKeys.posts.all, "list", projectId, page] as const,
+		detail: (projectId: string, postId: string) =>
+			[...queryKeys.posts.all, "detail", projectId, postId] as const,
+	},
+	comments: {
+		all: ["comments"] as const,
+		list: (projectId: string, postId: string, page?: number) =>
+			[...queryKeys.comments.all, "list", projectId, postId, page] as const,
+	},
+	files: {
+		all: ["files"] as const,
+		list: (projectId: string, page?: number) =>
+			[...queryKeys.files.all, "list", projectId, page] as const,
+	},
+	notifications: {
+		all: ["notifications"] as const,
+		list: (page?: number) =>
+			[...queryKeys.notifications.all, "list", page] as const,
+		unreadCount: () => [...queryKeys.notifications.all, "unreadCount"] as const,
+	},
 } as const;

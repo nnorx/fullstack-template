@@ -1,6 +1,12 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { useWebSocketNotifications } from "@/hooks/use-notifications";
 import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
+
+function AuthenticatedLayout() {
+	useWebSocketNotifications();
+	return <Outlet />;
+}
 
 export const Route = createFileRoute("/_authenticated")({
 	beforeLoad: async ({ context, location }) => {
@@ -22,5 +28,5 @@ export const Route = createFileRoute("/_authenticated")({
 
 		return { session };
 	},
-	component: () => <Outlet />,
+	component: AuthenticatedLayout,
 });

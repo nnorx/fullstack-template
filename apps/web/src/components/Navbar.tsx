@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,12 +48,20 @@ export function Navbar() {
 					Fullstack Template
 				</Link>
 				{isAuthenticated && (
-					<Link
-						to="/dashboard"
-						className="hidden text-muted-foreground text-sm transition-colors hover:text-foreground md:inline [&.active]:text-foreground"
-					>
-						Dashboard
-					</Link>
+					<>
+						<Link
+							to="/dashboard"
+							className="hidden text-muted-foreground text-sm transition-colors hover:text-foreground md:inline [&.active]:text-foreground"
+						>
+							Dashboard
+						</Link>
+						<Link
+							to="/projects"
+							className="hidden text-muted-foreground text-sm transition-colors hover:text-foreground md:inline [&.active]:text-foreground"
+						>
+							Projects
+						</Link>
+					</>
 				)}
 			</nav>
 
@@ -60,6 +69,7 @@ export function Navbar() {
 			<div className="hidden items-center gap-2 md:flex">
 				{isPending ? null : isAuthenticated ? (
 					<>
+						<NotificationBell />
 						<span className="text-muted-foreground text-sm">
 							{session.user.name}
 						</span>
@@ -95,14 +105,24 @@ export function Navbar() {
 						</SheetHeader>
 						<nav className="flex flex-col gap-1 px-4">
 							{isAuthenticated && (
-								<SheetClose asChild>
-									<Link
-										to="/dashboard"
-										className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent [&.active]:bg-accent [&.active]:text-accent-foreground"
-									>
-										Dashboard
-									</Link>
-								</SheetClose>
+								<>
+									<SheetClose asChild>
+										<Link
+											to="/dashboard"
+											className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent [&.active]:bg-accent [&.active]:text-accent-foreground"
+										>
+											Dashboard
+										</Link>
+									</SheetClose>
+									<SheetClose asChild>
+										<Link
+											to="/projects"
+											className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent [&.active]:bg-accent [&.active]:text-accent-foreground"
+										>
+											Projects
+										</Link>
+									</SheetClose>
+								</>
 							)}
 						</nav>
 						<div className="mt-auto border-t px-4 pt-4 pb-2">

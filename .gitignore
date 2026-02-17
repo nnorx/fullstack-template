@@ -29,6 +29,9 @@ coverage
 # Database
 drizzle/meta
 
+# Uploads
+uploads/
+
 # Generated files
 openapi.json
 
