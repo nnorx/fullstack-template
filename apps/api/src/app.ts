@@ -12,7 +12,10 @@ import {
 	requestIdMiddleware,
 } from "./middleware/request-id.ts";
 import { authRoutes } from "./routes/auth.ts";
+import { fileDownloadRoutes } from "./routes/files.ts";
 import { healthRoutes } from "./routes/health.ts";
+import { notificationRoutes } from "./routes/notifications.ts";
+import { projectRoutes } from "./routes/projects.ts";
 import { testRoutes } from "./routes/test.ts";
 
 const isDev = env.NODE_ENV === "development";
@@ -91,7 +94,10 @@ app.use("/api/auth/*", authLimiter);
 
 // ── Routes ─────────────────────────────────────────────────────────
 app.route("/api/auth", authRoutes);
+app.route("/api/files", fileDownloadRoutes);
 app.route("/api/health", healthRoutes);
+app.route("/api/notifications", notificationRoutes);
+app.route("/api/projects", projectRoutes);
 
 // Test routes (only in development)
 if (isDev) {

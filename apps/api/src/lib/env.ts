@@ -20,6 +20,7 @@ const envSchema = z.object({
 	LOG_LEVEL: z
 		.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
 		.default("info"),
+	UPLOAD_DIR: z.string().default("./uploads"),
 	/** Sentry DSN for error tracking and performance monitoring. Optional — when unset or empty, Sentry is disabled. */
 	SENTRY_DSN: z.preprocess(
 		(val) => (val === "" ? undefined : val),

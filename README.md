@@ -17,6 +17,14 @@ A modern fullstack monorepo template with end-to-end type safety, designed for s
 
 **Infrastructure**: Docker Compose, Caddy, Cloudflare Tunnel
 
+## Features
+
+- **Projects** — Create projects, invite collaborators by email, manage members with role-based access (owner / contributor)
+- **Posts & Comments** — Threaded discussions within projects, with author attribution and inline comment counts
+- **File Uploads** — Drag-and-drop image uploads (JPEG, PNG, GIF, WebP, SVG) with 10MB limit, stored on local disk
+- **Real-time Notifications** — WebSocket-powered notifications when someone shares a project, creates a post, or comments on your post
+- **Authentication** — Email + password auth with session cookies, route guards, and admin RBAC via Better Auth
+
 ## Architecture
 
 ```
@@ -29,12 +37,13 @@ A modern fullstack monorepo template with end-to-end type safety, designed for s
 │  ┌───────────┐ ┌───────────┐ ┌──────────────┐  │
 │  │cloudflared│→│   Caddy   │→│  Hono API    │  │
 │  └───────────┘ │ (static + │ │  :3001       │  │
-│                │  proxy)   │ └──────┬───────┘  │
-│                └───────────┘        │          │
-│                             ┌───────┴───────┐  │
-│                             │  PostgreSQL   │  │
-│                             │  :5432        │  │
-│                             └───────────────┘  │
+│                │  proxy)   │ │  + WebSocket │  │
+│                └───────────┘ └──┬─────┬─────┘  │
+│                                 │     │        │
+│                          ┌──────┴┐ ┌──┴──────┐ │
+│                          │ PG    │ │ Uploads │ │
+│                          │ :5432 │ │ (volume)│ │
+│                          └───────┘ └─────────┘ │
 └────────────────────────────────────────────────┘
 ```
 
@@ -102,7 +111,7 @@ pnpm dev
 
 The frontend is at `http://localhost:5173` and the API at `http://localhost:3001`.
 
-The Vite dev server proxies `/api` requests to the backend automatically.
+The Vite dev server proxies `/api` and `/ws` (WebSocket) requests to the backend automatically.
 
 ## Project Structure
 
@@ -112,7 +121,8 @@ fullstack-template/
 │   ├── web/                  # React frontend
 │   │   ├── src/
 │   │   │   ├── components/   # UI components (shadcn/ui)
-│   │   │   ├── lib/          # API client, auth client, utilities
+│   │   │   ├── hooks/        # React Query hooks (projects, posts, files, etc.)
+│   │   │   ├── lib/          # API client, auth client, WebSocket, utilities
 │   │   │   ├── routes/       # TanStack Router file-based routes
 │   │   │   └── test/         # Test setup and utilities
 │   │   └── ...config files
@@ -121,7 +131,7 @@ fullstack-template/
 │       │   ├── db/           # Drizzle schema, migrations, seeds
 │       │   ├── routes/       # API route handlers
 │       │   ├── middleware/   # Auth, logging middleware
-│       │   └── lib/          # Auth config, env validation
+│       │   └── lib/          # Auth, env, storage, WebSocket, notifications
 │       └── ...config files
 ├── packages/
 │   └── shared/               # Shared Zod schemas + types
@@ -130,7 +140,7 @@ fullstack-template/
 │   ├── docker-compose.dev.yml # Dev compose (Postgres only)
 │   ├── Dockerfile.api        # Multi-stage API build
 │   ├── Dockerfile.web        # Multi-stage frontend build (Caddy)
-│   ├── Caddyfile             # Reverse proxy config
+│   ├── Caddyfile             # Reverse proxy + WebSocket config
 │   └── cloudflared/          # Tunnel config example
 ├── turbo.json                # Turborepo task pipeline
 ├── pnpm-workspace.yaml       # Workspace configuration
@@ -194,6 +204,22 @@ When adding a new API route:
 1. Define the route in `apps/api/src/routes/` using `createRoute` with Zod schemas
 2. Run `pnpm --filter @fullstack-template/web typegen` to regenerate types
 3. Create a hook in `apps/web/src/hooks/` using `client.GET`/`POST`/etc.
+
+## Replacing the Example Features
+
+The projects/posts/comments features are meant to be replaced with your own domain. Here's what to touch:
+
+1. **Database schema** — Edit `apps/api/src/db/schema/projects.ts` (or replace it entirely). Run `pnpm db:generate` then `pnpm db:migrate`
+2. **Shared validation** — Update `packages/shared/src/schemas/projects.ts` with your Zod schemas, then `pnpm --filter @fullstack-template/shared build`
+3. **API routes** — Replace/edit files in `apps/api/src/routes/`. Each file follows the same pattern: `createRoute()` with Zod schemas + `app.openapi()` handler
+4. **Mount routes** — Update `apps/api/src/app.ts` to mount your new routes
+5. **Regenerate types** — Run `pnpm typegen` so the frontend picks up your new API shape
+6. **Frontend hooks** — Replace files in `apps/web/src/hooks/`. Each hook wraps `client.GET`/`POST`/etc. with React Query
+7. **Frontend routes** — Replace files under `apps/web/src/routes/_authenticated/projects/` with your own pages
+8. **Query keys** — Update `apps/web/src/lib/query-keys.ts` to match your new domains
+9. **Seed data** — Update `apps/api/src/db/seed.ts` for your new schema
+
+The auth system, file uploads, WebSocket notifications, and infrastructure are all independent of the example domain and can be kept as-is.
 
 ## Authentication
 
@@ -365,6 +391,7 @@ GitHub Actions automatically:
 | `BETTER_AUTH_SECRET` | Yes | - | Secret key for auth token signing |
 | `BETTER_AUTH_URL` | No | `http://localhost:3001` | Backend URL for auth |
 | `API_PORT` | No | `3001` | Port for the API server |
+| `UPLOAD_DIR` | No | `./uploads` | Directory for file uploads |
 | `VITE_API_URL` | No | `""` | API URL for the frontend |
 | `SENTRY_DSN` | No | - | Backend Sentry DSN for error tracking |
 | `VITE_SENTRY_DSN` | No | - | Frontend Sentry DSN for error tracking |
