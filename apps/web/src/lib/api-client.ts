@@ -4,6 +4,12 @@ import type { paths } from "./api.d.ts";
 import { ApiError } from "./api-error.ts";
 
 /**
+ * Module-level flag to prevent multiple parallel 401 responses from each
+ * triggering a login redirect. Reset naturally by the full page navigation.
+ */
+let isRedirectingToLogin = false;
+
+/**
  * Middleware that throws an {@link ApiError} when the response matches the
  * API-wide error envelope: `{ error: { code, message, details? } }`.
  *
@@ -12,10 +18,27 @@ import { ApiError } from "./api-error.ts";
  * openapi-fetch returns them in its typed `error` field and callers
  * can handle them as normal domain data.
  *
+ * Also handles 401 (expired/missing session) by redirecting to the login
+ * page with a return URL. A full page navigation is intentional — it clears
+ * all potentially-stale React Query caches.
+ *
  * Exported for direct unit testing.
  */
 export async function handleErrorResponse(response: Response): Promise<void> {
 	if (response.ok) return;
+
+	// Redirect to login on expired session before throwing,
+	// so the navigation is triggered regardless of error handling.
+	if (
+		response.status === 401 &&
+		!isRedirectingToLogin &&
+		!window.location.pathname.startsWith("/login") &&
+		!window.location.pathname.startsWith("/register")
+	) {
+		isRedirectingToLogin = true;
+		const returnUrl = window.location.pathname + window.location.search;
+		window.location.href = `/login?redirect=${encodeURIComponent(returnUrl)}`;
+	}
 
 	const body = await response
 		.clone()
