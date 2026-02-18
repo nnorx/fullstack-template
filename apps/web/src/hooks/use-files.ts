@@ -19,24 +19,17 @@ export function useUploadFile(projectId: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async (file: File) => {
-			const formData = new FormData();
-			formData.append("file", file);
-
-			const response = await fetch(`/api/projects/${projectId}/files`, {
-				method: "POST",
-				body: formData,
-				credentials: "include",
+			const { data } = await client.POST("/api/projects/{projectId}/files", {
+				params: { path: { projectId } },
+				// OpenAPI codegen types binary fields as `string`; cast needed for File
+				body: { file: file as unknown as string },
+				bodySerializer(body) {
+					const fd = new FormData();
+					if (body) fd.append("file", body.file as unknown as Blob);
+					return fd;
+				},
 			});
-
-			if (!response.ok) {
-				const err = await response.json();
-				throw new Error(
-					(err as { error?: { message?: string } })?.error?.message ??
-						"Upload failed",
-				);
-			}
-
-			return response.json();
+			return data;
 		},
 		onSuccess: () => {
 			void queryClient.invalidateQueries({

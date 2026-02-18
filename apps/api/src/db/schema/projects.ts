@@ -87,7 +87,10 @@ export const comment = pgTable(
 		content: text("content").notNull(),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 	},
-	(table) => [index("comment_post_id_idx").on(table.postId)],
+	(table) => [
+		index("comment_post_id_idx").on(table.postId),
+		index("comment_author_id_idx").on(table.authorId),
+	],
 );
 
 // ── Files ────────────────────────────────────────────────────────────
@@ -108,7 +111,10 @@ export const projectFile = pgTable(
 		sizeBytes: integer("size_bytes").notNull(),
 		createdAt: timestamp("created_at").notNull().defaultNow(),
 	},
-	(table) => [index("project_file_project_id_idx").on(table.projectId)],
+	(table) => [
+		index("project_file_project_id_idx").on(table.projectId),
+		index("project_file_uploader_id_idx").on(table.uploaderId),
+	],
 );
 
 // ── Notifications ────────────────────────────────────────────────────
@@ -140,5 +146,6 @@ export const notification = pgTable(
 	(table) => [
 		index("notification_recipient_id_idx").on(table.recipientId),
 		index("notification_recipient_read_idx").on(table.recipientId, table.read),
+		index("notification_actor_id_idx").on(table.actorId),
 	],
 );
