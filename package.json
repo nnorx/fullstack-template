@@ -1,6 +1,6 @@
 {
 	"name": "fullstack-template",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "A modern fullstack monorepo template with end-to-end type safety, designed for self-hosted deployment",
 	"license": "MIT",
 	"repository": {
