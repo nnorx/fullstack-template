@@ -33,7 +33,7 @@ export function useUploadFile(projectId: string) {
 		},
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: queryKeys.files.all,
+				queryKey: queryKeys.files.lists(projectId),
 			});
 		},
 	});
@@ -49,7 +49,7 @@ export function useDeleteFile(projectId: string) {
 		},
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: queryKeys.files.all,
+				queryKey: queryKeys.files.lists(projectId),
 			});
 		},
 	});

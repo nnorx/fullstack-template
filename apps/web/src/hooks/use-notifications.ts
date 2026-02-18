@@ -79,13 +79,13 @@ export function useWebSocketNotifications() {
 				const projectId = inner?.projectId;
 				if (projectId) {
 					void queryClient.invalidateQueries({
-						queryKey: [...queryKeys.posts.all, "list", projectId],
+						queryKey: queryKeys.posts.lists(projectId),
 					});
 					void queryClient.invalidateQueries({
-						queryKey: [...queryKeys.posts.all, "detail", projectId],
+						queryKey: queryKeys.posts.details(projectId),
 					});
 					void queryClient.invalidateQueries({
-						queryKey: [...queryKeys.files.all, "list", projectId],
+						queryKey: queryKeys.files.lists(projectId),
 					});
 					void queryClient.invalidateQueries({
 						queryKey: queryKeys.projectMembers.list(projectId),

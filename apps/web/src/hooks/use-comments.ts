@@ -20,7 +20,7 @@ export function useCreateComment(projectId: string, postId: string) {
 				queryKey: queryKeys.posts.detail(projectId, postId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: [...queryKeys.posts.all, "list", projectId],
+				queryKey: queryKeys.posts.lists(projectId),
 			});
 		},
 	});
@@ -42,7 +42,7 @@ export function useDeleteComment(projectId: string, postId: string) {
 				queryKey: queryKeys.posts.detail(projectId, postId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: [...queryKeys.posts.all, "list", projectId],
+				queryKey: queryKeys.posts.lists(projectId),
 			});
 		},
 	});
