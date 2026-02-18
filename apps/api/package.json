@@ -12,7 +12,7 @@
 	"scripts": {
 		"dev": "tsx watch --env-file=../../.env src/index.ts",
 		"build": "tsdown src/index.ts src/app.ts src/db/migrate.ts --format esm --dts",
-		"generate:openapi": "tsx --env-file=../../.env src/generate-openapi.ts",
+		"generate:openapi": "tsx --env-file-if-exists=../../.env src/generate-openapi.ts",
 		"start": "node dist/index.mjs",
 		"lint": "biome check",
 		"format": "biome check --write",
@@ -22,11 +22,11 @@
 		"test:coverage": "vitest run --coverage",
 		"knip": "knip",
 		"db:generate": "drizzle-kit generate",
-		"db:migrate": "tsx --env-file=../../.env src/db/migrate.ts",
+		"db:migrate": "tsx --env-file-if-exists=../../.env src/db/migrate.ts",
 		"db:migrate:prod": "node dist/db/migrate.mjs",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
-		"db:seed": "tsx --env-file=../../.env src/db/seed.ts"
+		"db:seed": "tsx --env-file-if-exists=../../.env src/db/seed.ts"
 	},
 	"dependencies": {
 		"@fullstack-template/shared": "workspace:*",
