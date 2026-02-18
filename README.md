@@ -13,7 +13,9 @@ A modern fullstack monorepo template with end-to-end type safety, designed for s
 
 **Shared** (`packages/shared`): Zod schemas and derived types shared between API and frontend
 
-**Tooling**: Turborepo, pnpm workspaces, Biome, Knip, Vitest
+**Testing** (`apps/e2e`): Playwright E2E tests covering auth flows + example project CRUD
+
+**Tooling**: Turborepo, pnpm workspaces, Biome, Knip, Vitest, Playwright
 
 **Infrastructure**: Docker Compose, Caddy, Cloudflare Tunnel
 
@@ -133,6 +135,9 @@ fullstack-template/
 │       │   ├── middleware/   # Auth, logging middleware
 │       │   └── lib/          # Auth, env, storage, WebSocket, notifications
 │       └── ...config files
+│   └── e2e/                  # Playwright E2E tests
+│       ├── fixtures/         # Auth fixtures and seed credentials
+│       └── tests/            # Auth, dashboard, and project specs
 ├── packages/
 │   └── shared/               # Shared Zod schemas + types
 ├── infra/
@@ -160,6 +165,8 @@ fullstack-template/
 | `pnpm type-check` | TypeScript validation across workspace |
 | `pnpm test` | Run all tests |
 | `pnpm knip` | Find unused code/dependencies |
+| `pnpm test:e2e` | Run Playwright E2E tests |
+| `pnpm db:e2e:reset` | Reset the E2E test database |
 
 ### Database
 
@@ -218,6 +225,8 @@ The projects/posts/comments features are meant to be replaced with your own doma
 7. **Frontend routes** — Replace files under `apps/web/src/routes/_authenticated/projects/` with your own pages
 8. **Query keys** — Update `apps/web/src/lib/query-keys.ts` to match your new domains
 9. **Seed data** — Update `apps/api/src/db/seed.ts` for your new schema
+
+10. **E2E tests** — Replace or delete `apps/e2e/tests/projects/` (each file has a REPLACEABLE header comment). Auth and dashboard tests in `apps/e2e/tests/auth/` and `apps/e2e/tests/dashboard/` are permanent
 
 The auth system, file uploads, WebSocket notifications, and infrastructure are all independent of the example domain and can be kept as-is.
 
@@ -380,8 +389,9 @@ docker compose -f infra/docker-compose.yml up -d
 
 GitHub Actions automatically:
 1. Runs lint, type-check, and tests on every PR
-2. Builds multi-arch Docker images (amd64 + arm64) on push to main
-3. Pushes images to GitHub Container Registry (ghcr.io)
+2. Runs E2E tests against a Postgres service container
+3. Builds Docker images on push to main
+4. Pushes images to GitHub Container Registry (ghcr.io)
 
 ## Environment Variables
 

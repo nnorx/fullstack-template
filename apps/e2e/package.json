@@ -1,0 +1,19 @@
+{
+	"name": "@fullstack-template/e2e",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test:e2e": "playwright test",
+		"test:ui": "playwright test --ui",
+		"test:headed": "playwright test --headed",
+		"test:debug": "playwright test --debug",
+		"report": "playwright show-report",
+		"lint": "biome check",
+		"type-check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.57.0",
+		"@types/node": "^25.2.3",
+		"typescript": "^5.9.3"
+	}
+}

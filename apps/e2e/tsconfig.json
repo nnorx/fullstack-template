@@ -1,0 +1,12 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo",
+		"lib": ["ES2023"],
+		"noEmit": true,
+		"baseUrl": ".",
+		"paths": {},
+		"exactOptionalPropertyTypes": false
+	},
+	"include": ["**/*.ts"]
+}
