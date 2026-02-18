@@ -40,6 +40,8 @@
 		"db:push": "pnpm --filter @fullstack-template/api db:push",
 		"db:studio": "pnpm --filter @fullstack-template/api db:studio",
 		"db:seed": "pnpm --filter @fullstack-template/api db:seed",
+		"test:e2e": "turbo run test:e2e",
+		"db:e2e:reset": "docker exec -i $(docker compose -f infra/docker-compose.dev.yml ps -q db) psql -U postgres -c 'DROP DATABASE IF EXISTS fullstack_template_test' && docker exec -i $(docker compose -f infra/docker-compose.dev.yml ps -q db) psql -U postgres -c 'CREATE DATABASE fullstack_template_test' && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/fullstack_template_test pnpm db:migrate && DATABASE_URL=postgresql://postgres:postgres@localhost:5432/fullstack_template_test BETTER_AUTH_SECRET=e2e-test-secret-must-be-at-least-32-characters-long BETTER_AUTH_URL=http://localhost:3001 NODE_ENV=test pnpm db:seed",
 		"prepare": "husky"
 	},
 	"lint-staged": {

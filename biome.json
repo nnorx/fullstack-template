@@ -139,6 +139,22 @@
 			}
 		},
 		{
+			"includes": ["apps/e2e/**"],
+			"linter": {
+				"rules": {
+					"nursery": {
+						"useSortedClasses": "off"
+					},
+					"performance": {
+						"noBarrelFile": "off"
+					},
+					"suspicious": {
+						"noConsole": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["**/*.d.ts"],
 			"linter": {
 				"rules": {

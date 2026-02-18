@@ -25,6 +25,14 @@
 		},
 		"packages/shared": {
 			"entry": ["src/index.ts"]
+		},
+		"apps/e2e": {
+			"entry": [
+				"playwright.config.ts",
+				"tests/**/*.spec.ts",
+				"tests/global-setup.ts",
+				"fixtures/**/*.ts"
+			]
 		}
 	}
 }

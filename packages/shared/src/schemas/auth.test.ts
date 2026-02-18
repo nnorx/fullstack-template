@@ -87,7 +87,7 @@ describe("registerSchema", () => {
 	it("rejects password longer than 128 characters", () => {
 		const result = registerSchema.safeParse({
 			...validInput,
-			password: "Aa1!" + "x".repeat(125),
+			password: `Aa1!${"x".repeat(125)}`,
 		});
 		expect(result.success).toBe(false);
 	});
@@ -95,7 +95,7 @@ describe("registerSchema", () => {
 	it("accepts password at exactly 128 characters", () => {
 		const result = registerSchema.safeParse({
 			...validInput,
-			password: "Aa1!" + "x".repeat(124),
+			password: `Aa1!${"x".repeat(124)}`,
 		});
 		expect(result.success).toBe(true);
 	});
