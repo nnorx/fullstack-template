@@ -4,12 +4,45 @@ import { WebSocket, WebSocketServer } from "ws";
 import { auth } from "./auth.ts";
 import { logger } from "./logger.ts";
 
+interface LiveWebSocket extends WebSocket {
+	isAlive: boolean;
+}
+
 const wss = new WebSocketServer({ noServer: true });
 
-// Track connected clients by userId → Set<WebSocket>
-const clients = new Map<string, Set<WebSocket>>();
+// Track connected clients by userId → Set<LiveWebSocket>
+const clients = new Map<string, Set<LiveWebSocket>>();
 
-wss.on("connection", (ws: WebSocket, userId: string) => {
+const PING_INTERVAL_MS = 30_000;
+
+// Periodically ping all connected clients to detect stale connections.
+// Clients that don't respond with a pong before the next ping are terminated.
+const pingInterval = setInterval(() => {
+	for (const sockets of clients.values()) {
+		for (const ws of sockets) {
+			if (!ws.isAlive) {
+				ws.terminate();
+				continue;
+			}
+			ws.isAlive = false;
+			ws.ping();
+		}
+	}
+}, PING_INTERVAL_MS);
+
+// Clean up the interval if the server itself closes
+wss.on("close", () => {
+	clearInterval(pingInterval);
+});
+
+wss.on("connection", (raw: WebSocket, userId: string) => {
+	const ws = raw as LiveWebSocket;
+	ws.isAlive = true;
+
+	ws.on("pong", () => {
+		ws.isAlive = true;
+	});
+
 	if (!clients.has(userId)) {
 		clients.set(userId, new Set());
 	}
@@ -70,6 +103,7 @@ export function sendToUser(userId: string, payload: Record<string, unknown>) {
 }
 
 export function closeAllConnections() {
+	clearInterval(pingInterval);
 	for (const sockets of clients.values()) {
 		for (const ws of sockets) {
 			ws.close();
