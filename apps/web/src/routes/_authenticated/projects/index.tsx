@@ -3,7 +3,7 @@ import { FolderPlus, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useProjects } from "@/hooks/use-projects";
 
 export const Route = createFileRoute("/_authenticated/projects/")({
@@ -32,8 +32,18 @@ function ProjectListPage() {
 				</div>
 
 				{isPending ? (
-					<div className="flex justify-center py-12">
-						<Spinner />
+					<div className="grid gap-4">
+						{["a", "b", "c"].map((id) => (
+							<Card key={id}>
+								<CardHeader className="flex flex-row items-start justify-between pb-2">
+									<Skeleton className="h-5 w-40" />
+									<Skeleton className="h-5 w-16 rounded-full" />
+								</CardHeader>
+								<CardContent>
+									<Skeleton className="h-4 w-3/4" />
+								</CardContent>
+							</Card>
+						))}
 					</div>
 				) : isError ? (
 					<Card>
