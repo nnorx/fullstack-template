@@ -65,7 +65,11 @@ function ProjectFilesPage() {
 				</div>
 			</div>
 
-			{error && <p className="text-destructive text-sm">{error}</p>}
+			{error && (
+				<p role="alert" className="text-destructive text-sm">
+					{error}
+				</p>
+			)}
 
 			{isPending ? (
 				<div className="flex justify-center py-8">

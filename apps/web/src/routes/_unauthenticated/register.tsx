@@ -105,7 +105,9 @@ function RegisterPage() {
 							aria-invalid={!!fieldErrors.name}
 						/>
 						{fieldErrors.name && (
-							<p className="text-destructive text-sm">{fieldErrors.name}</p>
+							<p role="alert" className="text-destructive text-sm">
+								{fieldErrors.name}
+							</p>
 						)}
 					</div>
 
@@ -121,7 +123,9 @@ function RegisterPage() {
 							aria-invalid={!!fieldErrors.email}
 						/>
 						{fieldErrors.email && (
-							<p className="text-destructive text-sm">{fieldErrors.email}</p>
+							<p role="alert" className="text-destructive text-sm">
+								{fieldErrors.email}
+							</p>
 						)}
 					</div>
 
@@ -137,7 +141,9 @@ function RegisterPage() {
 							aria-invalid={!!fieldErrors.password}
 						/>
 						{fieldErrors.password && (
-							<p className="text-destructive text-sm">{fieldErrors.password}</p>
+							<p role="alert" className="text-destructive text-sm">
+								{fieldErrors.password}
+							</p>
 						)}
 					</div>
 
