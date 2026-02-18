@@ -43,7 +43,7 @@ export function useCreatePost(projectId: string) {
 		},
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: [...queryKeys.posts.all, "list", projectId],
+				queryKey: queryKeys.posts.lists(projectId),
 			});
 		},
 	});
@@ -59,7 +59,7 @@ export function useDeletePost(projectId: string) {
 		},
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: [...queryKeys.posts.all, "list", projectId],
+				queryKey: queryKeys.posts.lists(projectId),
 			});
 		},
 	});

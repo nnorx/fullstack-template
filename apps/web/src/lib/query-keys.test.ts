@@ -101,16 +101,28 @@ describe("queryKeys", () => {
 			expect(list.slice(0, all.length)).toEqual(all);
 		});
 
-		it("manually constructed prefix matches list keys", () => {
-			const prefix = [...queryKeys.posts.all, "list", "p1"];
+		it("posts.lists() is a prefix of posts.list() for same project", () => {
+			const prefix = queryKeys.posts.lists("p1");
 			const page1 = queryKeys.posts.list("p1", 1);
 			const page2 = queryKeys.posts.list("p1", 2);
 			expect(page1.slice(0, prefix.length)).toEqual(prefix);
 			expect(page2.slice(0, prefix.length)).toEqual(prefix);
 		});
 
+		it("posts.details() is a prefix of posts.detail() for same project", () => {
+			const prefix = queryKeys.posts.details("p1");
+			const detail = queryKeys.posts.detail("p1", "post-1");
+			expect(detail.slice(0, prefix.length)).toEqual(prefix);
+		});
+
+		it("files.lists() is a prefix of files.list() for same project", () => {
+			const prefix = queryKeys.files.lists("p1");
+			const page1 = queryKeys.files.list("p1", 1);
+			expect(page1.slice(0, prefix.length)).toEqual(prefix);
+		});
+
 		it("different projectIds do not match each other's prefix", () => {
-			const prefixA = [...queryKeys.posts.all, "list", "p1"];
+			const prefixA = queryKeys.posts.lists("p1");
 			const listB = queryKeys.posts.list("p2", 1);
 			expect(listB.slice(0, prefixA.length)).not.toEqual(prefixA);
 		});

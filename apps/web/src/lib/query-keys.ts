@@ -40,8 +40,12 @@ export const queryKeys = {
 	},
 	posts: {
 		all: ["posts"] as const,
+		lists: (projectId: string) =>
+			[...queryKeys.posts.all, "list", projectId] as const,
 		list: (projectId: string, page?: number) =>
 			[...queryKeys.posts.all, "list", projectId, page] as const,
+		details: (projectId: string) =>
+			[...queryKeys.posts.all, "detail", projectId] as const,
 		detail: (projectId: string, postId: string) =>
 			[...queryKeys.posts.all, "detail", projectId, postId] as const,
 	},
@@ -52,6 +56,8 @@ export const queryKeys = {
 	},
 	files: {
 		all: ["files"] as const,
+		lists: (projectId: string) =>
+			[...queryKeys.files.all, "list", projectId] as const,
 		list: (projectId: string, page?: number) =>
 			[...queryKeys.files.all, "list", projectId, page] as const,
 	},
