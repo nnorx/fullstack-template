@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProject } from "@/hooks/use-projects";
 
@@ -21,8 +21,19 @@ function ProjectLayout() {
 
 	if (isPending) {
 		return (
-			<div className="flex flex-1 items-center justify-center">
-				<Spinner />
+			<div className="flex flex-1 flex-col p-6">
+				<div className="mx-auto w-full max-w-4xl space-y-6">
+					<div>
+						<Skeleton className="mb-2 h-4 w-20" />
+						<Skeleton className="h-7 w-64" />
+						<Skeleton className="mt-2 h-4 w-96" />
+					</div>
+					<Skeleton className="h-9 w-56" />
+					<div className="space-y-4">
+						<Skeleton className="h-32 w-full rounded-lg" />
+						<Skeleton className="h-32 w-full rounded-lg" />
+					</div>
+				</div>
 			</div>
 		);
 	}
