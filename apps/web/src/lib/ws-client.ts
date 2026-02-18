@@ -2,11 +2,32 @@ type MessageHandler = (data: Record<string, unknown>) => void;
 
 let ws: WebSocket | null = null;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+let reconnectAttempts = 0;
 const listeners = new Set<MessageHandler>();
+
+const MAX_RECONNECT_ATTEMPTS = 20;
+const BASE_DELAY_MS = 1000;
+const MAX_DELAY_MS = 30_000;
+
+function getBackoffDelay(): number {
+	const delay = Math.min(BASE_DELAY_MS * 2 ** reconnectAttempts, MAX_DELAY_MS);
+	// Add ±20% jitter to prevent thundering herd
+	const jitter = delay * 0.2 * (Math.random() * 2 - 1);
+	return delay + jitter;
+}
 
 function getWsUrl(): string {
 	const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 	return `${protocol}//${window.location.host}/ws`;
+}
+
+function scheduleReconnect() {
+	if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+		return;
+	}
+	const delay = getBackoffDelay();
+	reconnectAttempts++;
+	reconnectTimer = setTimeout(connect, delay);
 }
 
 function connect() {
@@ -18,6 +39,10 @@ function connect() {
 	}
 
 	ws = new WebSocket(getWsUrl());
+
+	ws.onopen = () => {
+		reconnectAttempts = 0;
+	};
 
 	ws.onmessage = (event) => {
 		try {
@@ -32,8 +57,7 @@ function connect() {
 
 	ws.onclose = () => {
 		ws = null;
-		// Auto-reconnect after 3 seconds
-		reconnectTimer = setTimeout(connect, 3000);
+		scheduleReconnect();
 	};
 
 	ws.onerror = () => {
@@ -42,6 +66,7 @@ function connect() {
 }
 
 export function connectWebSocket() {
+	reconnectAttempts = 0;
 	connect();
 }
 
