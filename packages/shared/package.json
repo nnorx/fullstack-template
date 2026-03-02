@@ -23,8 +23,8 @@
 		"zod": "^4"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.0",
-		"knip": "^5.83.1",
+		"@biomejs/biome": "2.4.4",
+		"knip": "^5.85.0",
 		"tsdown": "^0",
 		"typescript": "^5.9.3",
 		"vitest": "^4.0.18"
