@@ -31,7 +31,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
 					code: err.code,
 					message: err.message,
 					details: err.details,
-					...(env.NODE_ENV !== "production" ? { stack: err.stack } : {}),
+					...(env.NODE_ENV === "production" ? {} : { stack: err.stack }),
 				},
 			},
 			err.statusCode as ContentfulStatusCode,
@@ -49,7 +49,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
 				error: {
 					code: "HTTP_EXCEPTION",
 					message: err.message,
-					...(env.NODE_ENV !== "production" ? { stack: err.stack } : {}),
+					...(env.NODE_ENV === "production" ? {} : { stack: err.stack }),
 				},
 			},
 			err.status,
@@ -65,11 +65,11 @@ export const errorHandler: ErrorHandler = (err, c) => {
 			error: {
 				code: "INTERNAL_SERVER_ERROR",
 				message: "Internal server error",
-				...(env.NODE_ENV !== "production"
-					? {
+				...(env.NODE_ENV === "production"
+					? {}
+					: {
 							stack: err instanceof Error ? err.stack : undefined,
-						}
-					: {}),
+						}),
 			},
 		},
 		500,
