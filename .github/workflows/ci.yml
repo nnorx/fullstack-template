@@ -149,7 +149,7 @@ jobs:
       # To add ARM64 support (linux/arm64), use GitHub's native ARM runners (ubuntu-24.04-arm64)
       # or a matrix strategy with platform-specific runners. See: https://github.com/docker/build-push-action
       - name: Build and push API image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: infra/Dockerfile.api
@@ -162,7 +162,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build and push Web image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: infra/Dockerfile.web
