@@ -7,6 +7,9 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 10
+    # TODO: update to your GitHub username
+    assignees:
+      - "nnorx"
     labels:
       - "dependencies"
       - "automated"
@@ -18,25 +21,80 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      # Group major updates by scope
-      frontend-major:
+      # Frontend major updates
+      vite-major:
         patterns:
-          - "react*"
           - "vite*"
-          - "@tanstack/*"
-          - "tailwindcss"
+          - "@vitejs/*"
         update-types:
           - "major"
-      backend-major:
+      ui-major:
         patterns:
-          - "hono*"
+          - "@radix-ui/*"
+          - "radix-ui"
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "lucide-react"
+          - "class-variance-authority"
+          - "clsx"
+          - "tailwind-merge"
+          - "tw-animate-css"
+          - "sonner"
+        update-types:
+          - "major"
+      tanstack-major:
+        patterns:
+          - "@tanstack/*"
+        update-types:
+          - "major"
+      # Backend major updates
+      hono-major:
+        patterns:
+          - "hono"
+          - "hono-rate-limiter"
+          - "@hono/*"
+        update-types:
+          - "major"
+      drizzle-major:
+        patterns:
           - "drizzle-*"
-          - "better-auth"
+        update-types:
+          - "major"
+      # Cross-cutting major updates
+      sentry-major:
+        patterns:
+          - "@sentry/*"
+          - "@sentry-internal/*"
+        update-types:
+          - "major"
+      testing-major:
+        patterns:
+          - "@testing-library/*"
+          - "vitest"
+          - "@vitest/*"
+          - "jsdom"
+          - "@playwright/test"
+        update-types:
+          - "major"
+      dev-tooling-major:
+        patterns:
+          - "@biomejs/biome"
+          - "knip"
+          - "turbo"
+          - "husky"
+          - "lint-staged"
+          - "tsx"
+          - "tsdown"
+          - "babel-plugin-react-compiler"
+          - "openapi-typescript"
+          - "openapi-fetch"
         update-types:
           - "major"
     ignore:
       # Ignore updates for packages that require manual migration
       - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
         update-types: ["version-update:semver-major"]
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
@@ -46,6 +104,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+    # TODO: update to your GitHub username
+    assignees:
+      - "nnorx"
     labels:
       - "dependencies"
       - "github-actions"
