@@ -41,7 +41,7 @@
 		"hono-rate-limiter": "^0.5.3",
 		"pino": "^10.3.1",
 		"postgres": "^3",
-		"ws": "^8.19.0",
+		"ws": "^8.20.0",
 		"zod": "^4"
 	},
 	"devDependencies": {
