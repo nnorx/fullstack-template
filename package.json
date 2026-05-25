@@ -48,11 +48,11 @@
 		"*.{js,ts,tsx,jsx,json,css,md}": "biome check --write --no-errors-on-unmatched"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.7",
+		"@biomejs/biome": "2.4.15",
 		"husky": "^9.1.7",
-		"knip": "^6.0.0",
+		"knip": "^6.14.2",
 		"lint-staged": "^16.4.0",
-		"turbo": "2.8.17"
+		"turbo": "2.9.14"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
