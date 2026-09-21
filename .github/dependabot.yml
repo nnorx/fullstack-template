@@ -2,11 +2,12 @@ version: 2
 updates:
   # Enable version updates for npm dependencies
   - package-ecosystem: "npm"
+    # Paused: repo is not actively developed. Remove these two lines to resume.
+    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 10
     # TODO: update to your GitHub username
     assignees:
       - "nnorx"
@@ -101,6 +102,8 @@ updates:
 
   # Enable security updates for GitHub Actions
   - package-ecosystem: "github-actions"
+    # Paused: repo is not actively developed. Remove these two lines to resume.
+    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
